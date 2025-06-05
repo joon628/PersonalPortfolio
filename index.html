@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Junseok (Joon Kang) — Portfolio</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { min-height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #111; background: #fff; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+
+    /* Side Nav */
+    #side-nav { position: fixed; left: 0; top: 0; bottom: 0; width: 60px; background: #f9f9f9; border-right: 1px solid #e1e1e1; transition: width .3s; overflow: hidden; font-weight: 300; }
+    #side-nav:hover { width: 200px; }
+    #side-nav ul { padding: 2rem 0; }
+    #side-nav li { padding: 1rem 1.5rem; white-space: nowrap; }
+    #side-nav li a { font-size: 1rem; letter-spacing: .05em; color: #555; display: block; }
+    #side-nav li a:hover { color: #000; }
+
+    /* Main Content */
+    main { margin-left: 60px; transition: margin-left .3s; padding: 4rem 4rem 4rem 4rem; }
+    #side-nav:hover + main { margin-left: 200px; }
+
+    /* Section Layout */
+    section { margin-top: 4rem; margin-bottom: 4rem; display: flex; }
+    .section-header { flex: 0 0 18%; display: flex; flex-direction: column; align-items: flex-start; }
+    .section-header .bar { width: 14ch; height: 2px; background: #e1e1e1; margin-bottom: 0.25rem; }
+    .section-header h2 { font-size: 1rem; font-weight: 300; letter-spacing: .1em; text-transform: uppercase; color: #666; }
+    .section-content { flex: 1;  padding-right: 0; }
+
+    /* Header */
+    header { display: flex; align-items: center; justify-content: space-between; padding: 8rem 0; margin-bottom: 3rem; }
+    .name { font:sans-serif; font-size: 4.5rem; font-weight: 300; }
+    .info { text-align: right; flex: 1; padding-left: 4rem; }
+    .school-item { margin-bottom: 1rem; }
+    .school-name { font-size: 1.3rem; color: #666; font-weight: 300; }
+    .degree { font-size: .9rem; font-style: italic; color: #888; margin-top: .25rem; }
+    .roles { font-size: 1rem; font-weight: 300; letter-spacing: .05em; color: #666; margin-top: 1rem; }
+
+    /* Experience Timeline */
+    .timeline{
+    position:relative;
+    --line-x:1rem;      /* x‑coordinate of the vertical line */
+    padding-left:2rem;  /* space for dot + gap */
+}
+.timeline::before{
+    content:'';
+    position:absolute;
+    top:0; bottom:0;
+    left:var(--line-x);
+    width:2px;
+    background:#e1e1e1;
+}
+
+.entry{
+    position:relative;        /* each entry is its own anchor */
+    display:flex;
+    margin-bottom:2rem;
+    margin-left 
+}
+/* dot */
+.entry::before{
+    content:'';
+    position:absolute;
+
+    /* centre of the dot = 1 rem left of entry’s content box */
+    left:-1rem;                        /* ← simplest form            */
+    /* left:calc(var(--line-x) - 2rem);  ← variable form if preferred */
+
+    top:50%;
+    transform:translate(-50%,-50%);    /* keeps it centred */
+    width:8px; height:8px;
+    background:#111;
+    border-radius:50%;
+    z-index:1;
+}
+
+
+    .company { flex: 0 0 220px; margin-left: 2rem; font-size: 1.8rem; font-weight: 200; text-transform: uppercase; color: #333; align-self: center; }
+    .details { flex: 1; display: flex; flex-direction: column; padding-left: 2.5rem; }
+    .details time { font-size: .8rem; color: #888; }
+    .role { font-size: 1.4rem; color: #111; margin-top: .25rem; font-weight: 300; }
+    .desc { font-size: .95rem; color: #444; margin-top: 1rem; }
+    .expand-trigger { text-align: center; cursor: pointer; color: #111; opacity: .7; padding: .5rem 0; user-select: none; }
+    .expand-trigger:hover { opacity: 1; }
+
+    /* Skills & Certifications */
+    .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr; /* Exactly two equal columns */
+        gap: 2rem;
+        margin-top: 4rem;
+        margin-bottom: 4rem;
+    }
+    .skills-list { padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: flex-start; }
+    .skills-list li { display: inline-block; border: 1px solid #444; border-radius: 999px; padding: 0.4rem 1rem; font-size: .9rem; color: #555; }
+    #certifications li { font-size: .95rem; color: #444; margin-bottom: .5rem; }
+
+    .cert-list{
+        list-style:none;
+        padding:0;
+        margin:0;
+    }
+
+    /* row */
+    .cert-list li{
+        position:relative;
+        padding-left:1.5rem;                /* room for bullet */
+        font-size:.95rem;
+        line-height:1.4;
+        color:#444;
+    }
+
+    /* minimalist bullet */
+    .cert-list li::before{
+        content:'';
+        position:absolute;
+        left:0;
+        top:.55em;                          /* vertically aligns with first text line */
+        width:6px; height:6px;
+        border-radius:50%;
+        background:#111;
+    }
+
+    /* emphasise the certificate name; keep issuer/date lighter */
+    .cert-name { font-weight:500; color:#111; }
+    .cert-meta { font-size:.85rem; color:#888; }
+    
+    /* Projects */
+    .project            { display:flex; align-items:flex-start; margin-bottom:2rem;}
+    .project-title      { flex:0 0 250px; font-size:1.2rem; font-weight:300; color:#111;}
+    .project:hover .project-title{
+    opacity:.1;           /* or any value you like */
+    transition:opacity .3s;
+    }
+    .project-content    { flex:1; display:flex; align-items:flex-start; position:relative;}
+    .divider            { width:1px; background:#e1e1e1; margin:0 2rem;}
+    .project-details    { flex:1; transition:transform .3s;}
+    .project-date       { font-size:.9rem;  font-weight:600; color:#888; margin-bottom:.25rem;}
+    .project-desc       { font-size:.95rem; color:#666;}
+
+    .show-more-btn{
+    background:transparent;
+    border:none;
+    padding:0;
+    margin-left:1rem;          /* small horizontal gap */
+    font:300 .85rem/1.2 "Segoe UI", Helvetica, Arial, sans-serif;
+    text-transform:uppercase;  /* ALL CAPS */
+    color:#555;
+    opacity:0;                 /* still hidden until row hover */
+    pointer-events:none;
+    cursor:pointer;
+    transition:opacity .25s, color .2s, font-weight .2s;
+    align-self:center;         /* vertically centers inside the flex row */
+    }
+
+    /* bold + darker when hovering the button itself */
+    .show-more-btn:hover{
+    color:#000;
+    font-weight:700;           /* bold */
+    text-decoration:none;      /* keep it clean */
+    }
+
+    /* row‑hover effects (unchanged except for new slide distance) */
+    .project:hover .project-details{ transform:translateX(-78px); } /* shift matches new button width */
+    .project:hover .show-more-btn { opacity:1; pointer-events:auto; }
+
+/* popup card */
+.popup{
+  display:none;
+  position:absolute;
+  top:100%;                 /* just under the row */
+  right:0;
+  width:280px;
+  padding:1rem;
+  background:#fff;
+  border:1px solid #e1e1e1;
+  box-shadow:0 4px 12px rgba(0,0,0,.12);
+  font-size:.9rem;
+  color:#444;
+  z-index:10;
+}
+.popup.active{ display:block; }
+
+    /* Education */
+    .edu-logos {
+        display: flex;
+        justify-content: space-between; /* This spreads the items out evenly */
+        margin-top: 2rem;
+        padding: 0 10%; /* Add padding on both sides to create space from edges */
+        width: 100%;
+    }
+    .edu-logo { 
+        text-align: center; 
+        flex: 0 0 40%;
+    }
+    .edu-logo img { width: 80px; height: auto; filter: grayscale(100%); }
+    .edu-logo .school-name { margin-top: 1rem; font-size: 1rem; font-weight: 200; letter-spacing: .1em; text-transform: uppercase; color: #666; }
+    .edu-logo .degree-date { font-size: .85rem; font-style: italic; color: #888; margin-top: .25rem; }
+
+    /* Publications, Patents, Honors */
+    .list-section ul { display: grid; grid-template-columns: 1fr; row-gap: 1rem; padding: 0; margin: 0; }
+    .list-section li { font-size: .95rem; color: #444; }
+
+    /* Contact */
+    #contact ul { display: flex; flex-direction: column; gap: .5rem; }
+    #contact li { font-size: .95rem; color: #444; }
+/* ─────────────────  GENERIC LIST SECTIONS  ───────────────── */
+
+/* make every <section class="list-section"> share a simple grid */
+    .list-section .section-content ul{
+  list-style:none;
+  margin:0; padding:0;
+  display:grid;
+  grid-template-columns:1fr;          /* stack by default        */
+  row-gap:1rem;
+}
+
+/* when there are many items (≥4) widen to two balanced columns */
+@media(min-width:700px){
+  #honors .section-content ul,
+  #publications .section-content ul,
+  #patents .section-content ul{
+    grid-template-columns:1fr 1fr;    /* two equal columns       */
+    column-gap:2.5rem;
+  }
+}
+
+/* list row */
+.list-section li{
+  position:relative;
+  padding-left:1.5rem;               /* leave room for bullet   */
+  font-size:.95rem;
+  line-height:1.4;
+  color:#444;
+}
+
+/* minimalist black bullet */
+.list-section li::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:.55em;                          /* optically centres bullet */
+  width:6px; height:6px;
+  border-radius:50%;
+  background:#111;
+}
+
+/* emphasise titles inside a list item (optional) */
+.list-section strong{ color:#111; }
+
+/* ─────────────────  CONTACT  ───────────────── */
+
+#contact .section-content ul{
+  list-style:none;
+  margin:0; padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:.75rem;
+}
+#contact li{
+  font-size:.95rem;
+  color:#444;
+  display:flex;
+  align-items:center;
+}
+#contact li::before{
+  content:'';
+  width:6px; height:6px;
+  border-radius:50%;
+  background:#111;
+  margin-right:.75rem;
+}
+
+
+  </style>
+</head>
+<body>
+  <nav id="side-nav">
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#certifications">Certifications</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#publications">Publications</a></li>
+      <li><a href="#patents">Patents</a></li>
+      <li><a href="#honors">Honors</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+  <main>
+    <header>
+      <div class="name">Junseok Joon Kang</div>
+      <div class="info">
+        <div class="school-item"><div class="school-name">Harvard University</div><div class="degree">MS, Computational Science & Engineering</div></div>
+        <div class="school-item"><div class="school-name">Franklin W. Olin College of Engineering</div><div class="degree">BS, Computer Science</div></div>
+        <div class="roles">Software Engineer • Data Scientist • Full‑Stack Developer</div>
+      </div>
+    </header>
+    <section id="experience">
+      <div class="section-header"><span class="bar"></span><h2>Experience</h2></div>
+      <div class="section-content">
+        <div class="timeline">
+            <div class="entry"><div class="company">US Army</div><div class="details"><time>Sep 2024 – Present</time><div class="role">Soldier (KATUSA)</div><p class="desc">Serving mandatory military service as a KATUSA soldier in the US Eighth Army, Second Infantry Division, HHBN HSC, Office of Staff Judge Advocate.</p></div></div>
+            <div class="entry"><div class="company">Symbotic</div><div class="details"><time>May 2024 – Aug 2024</time><div class="role">Software Engineer Intern</div><p class="desc">Worked on the TeleOperations GUI using Python and PyQt5; researched C++ debugging via Behavior Trees; containerized workflows with Docker.</p></div></div>
+            <div class="entry"><div class="company">ii:eum</div><div class="details"><time>July 2022 – Sept 2023</time><div class="role">Co-Founder & Project Manager</div><p class="desc">Founded a non-profit English education platform; connected underprivileged students with bilingual tutors; managed dev team.</p></div></div>
+            <div class="entry"><div class="company">Amazon Robotics</div><div class="details"><time>Sept 2022 – May 2023</time><div class="role">Project Manager & Software Engineer</div><p class="desc">Developed networking solutions (TCP/IP, VPN) and Flask servers on Ubuntu to interface robotic arms with remote UIs.</p></div></div>
+            <div class="entry"><div class="company">Olin College</div><div class="details"><time>Sept 2022 – Jan 2023</time><div class="role">Data Analytic Researcher</div><p class="desc">Created geospatial data evaluation system; integrity tested navigation apps for the blind.</p></div></div>
+            <div class="entry"><div class="company">Microsoft</div><div class="details"><time>May 2022 – Aug 2022</time><div class="role">Software Engineer Intern</div><p class="desc">Built data pipelines and analytics reports using Python, pandas, seaborn, SQL, Jenkins, KQL, and Azure.</p></div></div>
+            <div class="entry"><div class="company">Motivo</div><div class="details"><time>Dec 2021 – Jan 2022</time><div class="role">Software Engineer Intern</div><p class="desc">Developed REST, XML, and SOAP integrations; built Django-based timekeeping tools.</p></div></div>
+            <div class="entry"><div class="company">Verve Motion</div><div class="details"><time>Sept 2021 – Dec 2021</time><div class="role">Software Engineer Intern</div><p class="desc">Created analytics pages with Firestore; built Python data transfer and visualization tools.</p></div></div>
+            <div class="entry"><div class="company">Olin College</div><div class="details"><time>Jan 2021 – Jun 2021</time><div class="role">Data Management Researcher</div><p class="desc">Analyzed FAA flight and pollutant data; managed ETL into AWS Aurora MySQL.</p></div></div>
+            <div class="entry"><div class="company">Olin College</div><div class="details"><time>Jan 2021 – May 2021</time><div class="role">Teaching Assistant</div><p class="desc">Assisted teaching Software Design (ENGR2510); guided students through design patterns.</p></div></div>
+            <div class="entry"><div class="company">WISE</div><div class="details"><time>May 2020 – Jan 2021</time><div class="role">Advertisement Translator</div><p class="desc">Translated HONGEWHA LED Mask brochure and Purgo Biologics PR videos into English.</p></div></div>
+            <div class="entry"><div class="company">Purgo Biologics</div><div class="details"><time>Mar 2020 – Dec 2020</time><div class="role">Full Stack Developer</div><p class="desc">Built sales prediction and stock management systems using Python, SQL, and PyQt5.</p></div></div>
+            <div class="entry"><div class="company">Olin College</div><div class="details"><time>Apr 2020 </time><div class="role">Robot Trajectory Projection</div><p class="desc">Programmed robot path projection using differential equations.</p></div></div>
+            <div class="entry"><div class="company">Chadwick International</div><div class="details"><time>Jan 2017 – Apr 2017</time><div class="role">Dual OS Virtualization</div><p class="desc">Developed a dual-OS virtualization system splitting CPU processing power.</p></div></div>
+         </div>
+        <div class="expand-trigger" onclick="showFull()">Expand</div>
+      </div>
+    </section>
+    <section id="skills" class="two-col">
+
+        <!-- ────────────  Skills  ──────────── -->
+        <div class="section-header">
+          <span class="bar"></span><h2>Skills</h2>
+        </div>
+        <div class="section-content">
+          <ul class="skills-list">
+            <li>Python</li><li>C++</li><li>MPI / OpenMP</li><li>Docker</li><li>Linux</li><li>SQL / MySQL</li>
+            <li>HTML5 & CSS</li><li>JavaScript</li><li>Flask</li><li>Django</li><li>Azure</li><li>AWS</li>
+            <li>R</li><li>MATLAB</li><li>Git</li><li>Jira</li>
+          </ul>
+        </div>
+      
+        <!-- ───────────  Certifications  ─────────── -->
+        <div class="section-header">
+          <span class="bar"></span><h2>Certifications</h2>
+        </div>
+        <div class="section-content">
+          <ul class="cert-list">
+      
+            <li>
+              <span class="cert-name">Barista License</span>
+              <span class="cert-meta"> · Specialty Coffee Assoc. — Issued Jun 2023</span>
+            </li>
+      
+            <li>
+              <span class="cert-name">MTA: Intro to Programming Using Python</span>
+              <span class="cert-meta"> · Microsoft — Issued Jan 2021</span>
+            </li>
+      
+            <li>
+              <span class="cert-name">Bilingual IB Diploma</span>
+              <span class="cert-meta"> · International Baccalaureate — Awarded Jun 2019</span>
+            </li>
+      
+            <li>
+              <span class="cert-name">YMCA Certified Lifeguard</span>
+              <span class="cert-meta"> · The Y — Issued Apr 2019</span>
+            </li>
+      
+            <li>
+              <span class="cert-name">Oracle Certified Java SE 6 Programmer</span>
+              <span class="cert-meta"> · Oracle — Issued Mar 2017</span>
+            </li>
+      
+          </ul>
+        </div>
+      
+      </section>
+      
+    <section id="projects">
+        <div class="section-header">
+          <span class="bar"></span><h2>Projects</h2>
+        </div>
+      
+        <div class="section-content">
+      
+         <!-- ───────────── FAA Flight Data Management System ───────────── -->
+<div class="project">
+    <div class="project-title">FAA Flight Data Management System</div>
+  
+    <div class="project-content">
+      <div class="divider"></div>
+  
+      <div class="project-details">
+        <div class="project-date">Jan 2021 – Jun 2021</div>
+        <div class="project-desc">
+          FAA flight data &amp; pollutant analysis; ETL into AWS Aurora MySQL.
+          (<a href="https://github.com/joon628/FAADataSort" target="_blank">Repo</a>)
+        </div>
+      </div>
+  
+      <button class="show-more-btn" aria-haspopup="dialog">Show&nbsp;more</button>
+  
+      <div class="popup">
+        <strong>Highlights</strong>
+        <ul>
+          <li>Python ETL pipeline processing&nbsp;2 GB/day flight logs</li>
+          <li>Aurora schema design for sub‑second analytical queries</li>
+          <li>Automated pollutant metrics for 50&nbsp;US airports</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <!-- ───────────── Monte Carlo Tree Search Research Presentation ───────────── -->
+  <div class="project">
+    <div class="project-title">Monte Carlo Tree Search Presentation</div>
+  
+    <div class="project-content">
+      <div class="divider"></div>
+  
+      <div class="project-details">
+        <div class="project-date">Nov 2020 – Dec 2020</div>
+        <div class="project-desc">
+          Presented Monte Carlo Tree Search for Tic‑Tac‑Toe &amp; Minimax.
+          (<a href="https://drive.google.com/drive/folders/1qq217b-Lk9HlNgN5cdYeKdXrNqj-ARSc"
+              target="_blank">Slides</a>)
+        </div>
+      </div>
+  
+      <button class="show-more-btn" aria-haspopup="dialog">Show&nbsp;more</button>
+  
+      <div class="popup">
+        <strong>Highlights</strong>
+        <ul>
+          <li>Explained UCT &amp; rollout policy tuning</li>
+          <li>Live demo: MCTS beats deterministic minimax 70 %</li>
+          <li>Audience feedback 4.8 / 5 (60 students)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <!-- ───────────── Spotify Song Data Analysis ───────────── -->
+  <div class="project">
+    <div class="project-title">Spotify Song Data Analysis</div>
+  
+    <div class="project-content">
+      <div class="divider"></div>
+  
+      <div class="project-details">
+        <div class="project-date">Nov 2020 – Dec 2020</div>
+        <div class="project-desc">
+          Analyzed Spotify metadata using R &amp; spotifyr to identify popularity factors.
+          (<a href="https://github.com/joon628/DataScience_Spotify_Analysis" target="_blank">Repo</a>)
+        </div>
+      </div>
+  
+      <button class="show-more-btn" aria-haspopup="dialog">Show&nbsp;more</button>
+  
+      <div class="popup">
+        <strong>Highlights</strong>
+        <ul>
+          <li>Scraped 33 k tracks; engineered 12 audio features</li>
+          <li>Random‑forest model → R² = 0.71 on popularity</li>
+          <li>Interactive Shiny dashboard for A&amp;R teams</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <!-- ───────────── Quantitative Fall Detection Analysis ───────────── -->
+  <div class="project">
+    <div class="project-title">Quantitative Fall Detection Analysis</div>
+  
+    <div class="project-content">
+      <div class="divider"></div>
+  
+      <div class="project-details">
+        <div class="project-date">Dec 2020</div>
+        <div class="project-desc">
+          Developed fall‑detection algorithm via accelerometer FFT.
+          (<a href="https://github.com/joon628/Quantitative_Fall_Detection_Analysis" target="_blank">Repo</a>)
+        </div>
+      </div>
+  
+      <button class="show-more-btn" aria-haspopup="dialog">Show&nbsp;more</button>
+  
+      <div class="popup">
+        <strong>Highlights</strong>
+        <ul>
+          <li>95 % sensitivity at 1 % false‑positive rate</li>
+          <li>Deployed on ESP32 with 1 s real‑time latency</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <!-- ───────────── Passive Solar House Quantitative Analysis ───────────── -->
+  <div class="project">
+    <div class="project-title">Passive Solar House Quantitative Analysis</div>
+  
+    <div class="project-content">
+      <div class="divider"></div>
+  
+      <div class="project-details">
+        <div class="project-date">Oct 2020</div>
+        <div class="project-desc">
+          Modeled passive‑solar house in MATLAB to optimize insulation.
+          (<a href="https://github.com/joon628/QEA_Bridge_of_Doom" target="_blank">Repo</a>)
+        </div>
+      </div>
+  
+      <button class="show-more-btn" aria-haspopup="dialog">Show&nbsp;more</button>
+  
+      <div class="popup">
+        <strong>Highlights</strong>
+        <ul>
+          <li>Finite‑difference heat‑transfer model (hourly)</li>
+          <li>Suggested R‑30 walls vs base R‑13 → 24 % energy cut</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <!-- ───────────── Robot Path Programming using LIDAR Data ───────────── -->
+  <div class="project">
+    <div class="project-title">Robot Path Programming using LIDAR Data</div>
+  
+    <div class="project-content">
+      <div class="divider"></div>
+  
+      <div class="project-details">
+        <div class="project-date">May 2020</div>
+        <div class="project-desc">
+          Obstacle navigation via RANSAC &amp; linear regression on LIDAR data.
+          (<a href="https://github.com/joon628/Quantitative_Engineering_Analysis_Robot_Simulation"
+              target="_blank">Repo</a>)
+        </div>
+      </div>
+  
+      <button class="show-more-btn" aria-haspopup="dialog">Show&nbsp;more</button>
+  
+      <div class="popup">
+        <strong>Highlights</strong>
+        <ul>
+          <li>Path planning time&nbsp;≤&nbsp;50 ms on Raspberry Pi 4</li>
+          <li>Reduced collision risk by 83 % in simulation</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <!-- ───────────── Subsidiary Stock Management System ───────────── -->
+  <div class="project">
+    <div class="project-title">Subsidiary Stock Management System</div>
+  
+    <div class="project-content">
+      <div class="divider"></div>
+  
+      <div class="project-details">
+        <div class="project-date">Mar 2020 – Apr 2020</div>
+        <div class="project-desc">
+          PyQt5 desktop app for subsidiary stock calculations &amp; live DB updates.
+          (<a href="https://github.com/hyegibang/PurgoBiologicsStorageManagement" target="_blank">Repo</a>)
+        </div>
+      </div>
+  
+      <button class="show-more-btn" aria-haspopup="dialog">Show&nbsp;more</button>
+  
+      <div class="popup">
+        <strong>Highlights</strong>
+        <ul>
+          <li>Real‑time sync with PostgreSQL warehouse DB</li>
+          <li>Barcode scanner integration; 30 % reduction in entry errors</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+      
+        </div><!-- .section-content -->
+      </section>
+      
+    <section id="education">
+      <div class="section-header"><span class="bar"></span><h2>Education</h2></div>
+      <div class="section-content">
+        <div class="edu-logos">
+          <div class="edu-logo"><img src="logos/harvard.svg" alt="Harvard University Logo" /><div class="school-name">HARVARD UNIVERSITY</div><div class="degree-date">M.S. Computational Science & Engineering (2023–2024)</div></div>
+          <div class="edu-logo"><img src="logos/olin.svg" alt="Olin College Logo" /><div class="school-name">OLIN COLLEGE OF ENGINEERING</div><div class="degree-date">B.S. Engineering in Computers, Concentration in Entrepreneurship (2019–2023)</div></div>
+        </div>
+      </div>
+    </section>
+    <section id="publications" class="list-section"><div class="section-header"><span class="bar"></span><h2>Publications</h2></div><div class="section-content"><ul><li>Solving Double Execution of Java’s paint() Method by Counting Down to the Heat Death of the Universe — SIGBOVIK, Apr 2022 (<a href="https://sigbovik.org/2022/proceedings.pdf">Proceedings</a>)</li></ul></div></section>
+    <section id="patents" class="list-section"><div class="section-header"><span class="bar"></span><h2>Patents</h2></div><div class="section-content"><ul><li>Product Inventory Management System and Means to Manage Stock by Using the System — KR 10‑2016‑0117022, Filed Mar 2016 (<a href="https://drive.google.com/file/d/0B5A-FH5Gp6NQem1uZV9lX2xiZ1ZubFV6dFZ1dTZXUE94OFlz">View</a>)</li></ul></div></section>
+    <section id="honors" class="list-section"><div class="section-header"><span class="bar"></span><h2>Honors & Awards</h2></div><div class="section-content"><ul><li>Colonel’s Excellency Award — US Army 2ID OSJA (Jan 2025)</li><li>Commandant’s List — Eighth Army Wightman NCO Academy (Nov 2024)</li><li>Seoul Metropolitan Council Award for Volunteer Service (Oct 2017)</li></ul></div></section>
+    <section id="contact"><div class="section-header"><span class="bar"></span><h2>Contact</h2></div><div class="section-content"><ul><li>Email: junseokkang@example.com</li><li>Phone: +82 10‑1234‑5678</li><li>Location: Seoul, South Korea</li></ul></div></section>
+  </main>
+  <script>
+    document.addEventListener('click', e => {
+    /* open / close the popup */
+    if (e.target.matches('.show-more-btn')) {
+        const popup = e.target.nextElementSibling;          // popup follows the button
+        popup.classList.toggle('active');
+        e.stopPropagation();                                // don’t bubble to body
+    } else {                                              // clicked somewhere else
+        document.querySelectorAll('.popup.active').forEach(p => p.classList.remove('active'));
+    }
+    });
+
+    /* optional: close on Esc key */
+    document.addEventListener('keyup', e => {
+    if (e.key === 'Escape')
+        document.querySelectorAll('.popup.active').forEach(p => p.classList.remove('active'));
+    });
+
+    function showFull() {
+      const entries = document.querySelectorAll('.timeline .entry');
+      const trigger = document.querySelector('.expand-trigger');
+      const expanded = trigger.textContent === 'Expand';
+      entries.forEach((el, i) => el.style.display = (!expanded && i >= 5) ? 'none' : 'flex');
+      trigger.textContent = expanded ? 'Collapse' : 'Expand';
+    }
+    document.addEventListener('DOMContentLoaded', () => showFull());
+
+    
+  </script>
+</body>
+</html>
