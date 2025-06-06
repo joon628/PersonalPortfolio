@@ -3,284 +3,1973 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Junseok (Joon Kang) — Portfolio</title>
+  <title>Junseok (Joon) Kang — Portfolio</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { min-height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #111; background: #fff; }
-    a { color: inherit; text-decoration: none; }
-    ul { list-style: none; }
-
-    /* Side Nav */
-    #side-nav { position: fixed; left: 0; top: 0; bottom: 0; width: 60px; background: #f9f9f9; border-right: 1px solid #e1e1e1; transition: width .3s; overflow: hidden; font-weight: 300; }
-    #side-nav:hover { width: 200px; }
-    #side-nav ul { padding: 2rem 0; }
-    #side-nav li { padding: 1rem 1.5rem; white-space: nowrap; }
-    #side-nav li a { font-size: 1rem; letter-spacing: .05em; color: #555; display: block; }
-    #side-nav li a:hover { color: #000; }
-
-    /* Main Content */
-    main { margin-left: 60px; transition: margin-left .3s; padding: 4rem 4rem 4rem 4rem; }
-    #side-nav:hover + main { margin-left: 200px; }
-
-    /* Section Layout */
-    section { margin-top: 4rem; margin-bottom: 4rem; display: flex; }
-    .section-header { flex: 0 0 18%; display: flex; flex-direction: column; align-items: flex-start; }
-    .section-header .bar { width: 14ch; height: 2px; background: #e1e1e1; margin-bottom: 0.25rem; }
-    .section-header h2 { font-size: 1rem; font-weight: 300; letter-spacing: .1em; text-transform: uppercase; color: #666; }
-    .section-content { flex: 1;  padding-right: 0; }
-
-    /* Header */
-    header { display: flex; align-items: center; justify-content: space-between; padding: 8rem 0; margin-bottom: 3rem; }
-    .name { font:sans-serif; font-size: 4.5rem; font-weight: 300; }
-    .info { text-align: right; flex: 1; padding-left: 4rem; }
-    .school-item { margin-bottom: 1rem; }
-    .school-name { font-size: 1.3rem; color: #666; font-weight: 300; }
-    .degree { font-size: .9rem; font-style: italic; color: #888; margin-top: .25rem; }
-    .roles { font-size: 1rem; font-weight: 300; letter-spacing: .05em; color: #666; margin-top: 1rem; }
-
-    /* Experience Timeline */
-    .timeline{
-    position:relative;
-    --line-x:1rem;      /* x‑coordinate of the vertical line */
-    padding-left:2rem;  /* space for dot + gap */
-}
-.timeline::before{
-    content:'';
-    position:absolute;
-    top:0; bottom:0;
-    left:var(--line-x);
-    width:2px;
-    background:#e1e1e1;
-}
-
-.entry{
-    position:relative;        /* each entry is its own anchor */
-    display:flex;
-    margin-bottom:2rem;
-    margin-left 
-}
-/* dot */
-.entry::before{
-    content:'';
-    position:absolute;
-
-    /* centre of the dot = 1 rem left of entry’s content box */
-    left:-1rem;                        /* ← simplest form            */
-    /* left:calc(var(--line-x) - 2rem);  ← variable form if preferred */
-
-    top:50%;
-    transform:translate(-50%,-50%);    /* keeps it centred */
-    width:8px; height:8px;
-    background:#111;
-    border-radius:50%;
-    z-index:1;
-}
-
-
-    .company { flex: 0 0 220px; margin-left: 2rem; font-size: 1.8rem; font-weight: 200; text-transform: uppercase; color: #333; align-self: center; }
-    .details { flex: 1; display: flex; flex-direction: column; padding-left: 2.5rem; }
-    .details time { font-size: .8rem; color: #888; }
-    .role { font-size: 1.4rem; color: #111; margin-top: .25rem; font-weight: 300; }
-    .desc { font-size: .95rem; color: #444; margin-top: 1rem; }
-    .expand-trigger { text-align: center; cursor: pointer; color: #111; opacity: .7; padding: .5rem 0; user-select: none; }
-    .expand-trigger:hover { opacity: 1; }
-
-    /* Skills & Certifications */
-    .two-col {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr; /* Exactly two equal columns */
-        gap: 2rem;
-        margin-top: 4rem;
-        margin-bottom: 4rem;
-    }
-    .skills-list { padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: flex-start; }
-    .skills-list li { display: inline-block; border: 1px solid #444; border-radius: 999px; padding: 0.4rem 1rem; font-size: .9rem; color: #555; }
-    #certifications li { font-size: .95rem; color: #444; margin-bottom: .5rem; }
-
-    .cert-list{
-        list-style:none;
-        padding:0;
-        margin:0;
+    /* ═══════════════════ CSS CUSTOM PROPERTIES ═══════════════════ */
+    :root {
+      --color-primary: #000;
+      --color-secondary: #111;
+      --color-tertiary: #333;
+      --color-muted: #666;
+      --color-light: #888;
+      --color-bg: #fff;
+      --color-bg-alt: #fafafa;
+      --color-bg-secondary: #f5f5f5;
+      --color-border: #e1e1e1;
+      --color-border-light: #f0f0f0;
+      --color-accent: #0066cc;
+      
+      --font-xs: clamp(0.75rem, 0.8vw, 0.85rem);
+      --font-sm: clamp(0.85rem, 0.9vw, 0.95rem);
+      --font-base: clamp(0.95rem, 1vw, 1rem);
+      --font-lg: clamp(1.1rem, 1.2vw, 1.4rem);
+      --font-xl: clamp(1.6rem, 2vw, 1.8rem);
+      --font-2xl: clamp(3rem, 4.5vw, 4.5rem);
+      
+      --spacing-xs: 0.25rem;
+      --spacing-sm: 0.5rem;
+      --spacing-md: 1rem;
+      --spacing-lg: 1.5rem;
+      --spacing-xl: 2rem;
+      --spacing-2xl: 3rem;
+      --spacing-3xl: 4rem;
+      
+      --transition-fast: 0.15s ease-out;
+      --transition-base: 0.25s ease-out;
+      --transition-slow: 0.4s ease-out;
+      
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+      
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 999px;
     }
 
-    /* row */
-    .cert-list li{
-        position:relative;
-        padding-left:1.5rem;                /* room for bullet */
-        font-size:.95rem;
-        line-height:1.4;
-        color:#444;
+    /* ═══════════════════ INTRO ANIMATION ═══════════════════ */
+    #intro { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-alt) 100%); 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      z-index: 1000;
+      backdrop-filter: blur(0px);
+      transition: backdrop-filter var(--transition-slow);
     }
-
-    /* minimalist bullet */
-    .cert-list li::before{
-        content:'';
-        position:absolute;
-        left:0;
-        top:.55em;                          /* vertically aligns with first text line */
-        width:6px; height:6px;
-        border-radius:50%;
-        background:#111;
-    }
-
-    /* emphasise the certificate name; keep issuer/date lighter */
-    .cert-name { font-weight:500; color:#111; }
-    .cert-meta { font-size:.85rem; color:#888; }
     
-    /* Projects */
-    .project            { display:flex; align-items:flex-start; margin-bottom:2rem;}
-    .project-title      { flex:0 0 250px; font-size:1.2rem; font-weight:300; color:#111;}
-    .project:hover .project-title{
-    opacity:.1;           /* or any value you like */
-    transition:opacity .3s;
+    .intro-name { 
+      font-size: var(--font-2xl); 
+      font-weight: 200; 
+      color: var(--color-primary); 
+      white-space: nowrap;
+      letter-spacing: -0.02em;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: introFadeIn 0.8s ease-out 0.2s forwards;
     }
-    .project-content    { flex:1; display:flex; align-items:flex-start; position:relative;}
-    .divider            { width:1px; background:#e1e1e1; margin:0 2rem;}
-    .project-details    { flex:1; transition:transform .3s;}
-    .project-date       { font-size:.9rem;  font-weight:600; color:#888; margin-bottom:.25rem;}
-    .project-desc       { font-size:.95rem; color:#666;}
-
-    .show-more-btn{
-    background:transparent;
-    border:none;
-    padding:0;
-    margin-left:1rem;          /* small horizontal gap */
-    font:300 .85rem/1.2 "Segoe UI", Helvetica, Arial, sans-serif;
-    text-transform:uppercase;  /* ALL CAPS */
-    color:#555;
-    opacity:0;                 /* still hidden until row hover */
-    pointer-events:none;
-    cursor:pointer;
-    transition:opacity .25s, color .2s, font-weight .2s;
-    align-self:center;         /* vertically centers inside the flex row */
+    
+    @keyframes introFadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-
-    /* bold + darker when hovering the button itself */
-    .show-more-btn:hover{
-    color:#000;
-    font-weight:700;           /* bold */
-    text-decoration:none;      /* keep it clean */
+    
+    .cursor {
+      display: inline-block;
+      width: 3px;
+      height: 1em;
+      background: var(--color-primary);
+      vertical-align: baseline;
+      animation: blink 1s steps(1) infinite;
+      margin-left: 3px;
+      border-radius: 1px;
+    }
+    
+    @keyframes blink { 
+      50% { opacity: 0; } 
     }
 
-    /* row‑hover effects (unchanged except for new slide distance) */
-    .project:hover .project-details{ transform:translateX(-78px); } /* shift matches new button width */
-    .project:hover .show-more-btn { opacity:1; pointer-events:auto; }
+    /* Hide header name until after intro */
+    header .name { 
+      visibility: hidden; 
+      opacity: 0;
+      transition: opacity var(--transition-slow);
+    }
 
-/* popup card */
-.popup{
-  display:none;
-  position:absolute;
-  top:100%;                 /* just under the row */
-  right:0;
-  width:280px;
-  padding:1rem;
-  background:#fff;
-  border:1px solid #e1e1e1;
-  box-shadow:0 4px 12px rgba(0,0,0,.12);
-  font-size:.9rem;
-  color:#444;
-  z-index:10;
-}
-.popup.active{ display:block; }
+    /* ═══════════════════ GLOBAL STYLES ═══════════════════ */
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+    
+    html { 
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+    
+    html, body { 
+      min-height: 100%; 
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; 
+      color: var(--color-secondary); 
+      background: var(--color-bg);
+      line-height: 1.6;
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    a { 
+      color: inherit; 
+      text-decoration: none; 
+      transition: color var(--transition-fast);
+    }
+    
+    a:hover {
+      color: var(--color-accent);
+    }
+    
+    ul { 
+      list-style: none; 
+    }
 
-    /* Education */
-    .edu-logos {
+    /* ═══════════════════ SIDE NAVIGATION ═══════════════════ */
+    #side-nav { 
+      position: fixed; 
+      left: 0; 
+      top: 0; 
+      bottom: 0; 
+      width: 60px; 
+      background: rgba(249, 249, 249, 0.95);
+      backdrop-filter: blur(20px);
+      border-right: none; /* Remove border */
+      box-shadow: var(--shadow-sm); /* Add subtle shadow instead */
+      transition: width var(--transition-base), background var(--transition-base); 
+      overflow: hidden; 
+      font-weight: 300;
+      z-index: 100;
+    }
+    
+    #side-nav:hover { 
+      width: 220px;
+      background: rgba(249, 249, 249, 0.98);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    #side-nav ul { 
+      padding: var(--spacing-2xl) 0; 
+    }
+    
+    #side-nav li { 
+      padding: var(--spacing-md) var(--spacing-lg); 
+      white-space: nowrap;
+      transform: translateX(-10px);
+      opacity: 0.7;
+      transition: all var(--transition-base);
+    }
+    
+    #side-nav:hover li {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    
+    #side-nav li a { 
+      font-size: var(--font-base); 
+      letter-spacing: 0.02em; 
+      color: var(--color-muted); 
+      display: block;
+      padding: var(--spacing-sm) 0;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+    }
+    
+    #side-nav li a:hover { 
+      color: var(--color-primary);
+      transform: translateX(4px);
+    }
+
+    /* ═══════════════════ MAIN CONTENT ═══════════════════ */
+    main { 
+      margin-left: 60px; 
+      transition: margin-left var(--transition-base); 
+      padding: var(--spacing-3xl);
+    }
+    
+    #side-nav:hover + main { 
+      margin-left: 220px; 
+    }
+
+    /* ═══════════════════ SECTION LAYOUT ═══════════════════ */
+    section { 
+      margin-top: var(--spacing-3xl); 
+      margin-bottom: var(--spacing-3xl); 
+      display: flex;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: sectionFadeIn 0.6s ease-out forwards;
+    }
+    
+    @keyframes sectionFadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Stagger section animations */
+    section:nth-child(2) { animation-delay: 0.1s; }
+    section:nth-child(3) { animation-delay: 0.2s; }
+    section:nth-child(4) { animation-delay: 0.3s; }
+    section:nth-child(5) { animation-delay: 0.4s; }
+    section:nth-child(6) { animation-delay: 0.5s; }
+    
+    .section-header { 
+      flex: 0 0 18%; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: flex-start;
+      position: sticky;
+      top: var(--spacing-3xl);
+      height: fit-content;
+    }
+    
+    .section-header .bar { 
+      width: 80px; 
+      height: 2px; 
+      background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-border) 100%); 
+      margin-bottom: var(--spacing-sm);
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: barSlideIn 0.8s ease-out 0.6s forwards;
+    }
+    
+    @keyframes barSlideIn {
+      to {
+        transform: scaleX(1);
+      }
+    }
+    
+    .section-header h2 { 
+      font-size: var(--font-base); 
+      font-weight: 400; 
+      letter-spacing: 0.15em; 
+      text-transform: uppercase; 
+      color: var(--color-muted);
+      opacity: 0;
+      animation: headerFadeIn 0.6s ease-out 0.8s forwards;
+    }
+    
+    @keyframes headerFadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+    
+    .section-content { 
+      flex: 1;  
+      padding-right: 0; 
+    }
+
+    /* ═══════════════════ HEADER ═══════════════════ */
+    header { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      padding: 6rem 0 4rem 0; 
+      margin-bottom: var(--spacing-2xl);
+      border-bottom: none; /* Remove border */
+      position: relative;
+    }
+    
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--color-accent), transparent);
+    }
+    
+    .name { 
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; 
+      font-size: var(--font-2xl); 
+      font-weight: 200;
+      letter-spacing: -0.02em;
+      color: var(--color-primary);
+      line-height: 1.1;
+    }
+    
+    .info { 
+      text-align: right; 
+      flex: 1; 
+      padding-left: var(--spacing-3xl); 
+    }
+    
+    .school-item { 
+      margin-bottom: var(--spacing-lg); 
+    }
+    
+    .school-name { 
+      font-size: var(--font-xl); 
+      color: var(--color-muted); 
+      font-weight: 300;
+      line-height: 1.3;
+    }
+    
+    .degree { 
+      font-size: var(--font-base); 
+      font-style: italic; 
+      color: var(--color-light); 
+      margin-top: var(--spacing-xs);
+      line-height: 1.4;
+    }
+    
+    .roles { 
+      font-size: var(--font-base); 
+      font-weight: 300; 
+      letter-spacing: 0.03em; 
+      color: var(--color-muted); 
+      margin-top: var(--spacing-lg);
+      line-height: 1.5;
+    }
+
+    /* ═══════════════════ EXPERIENCE TIMELINE - MINIMALISTIC ═══════════════════ */
+    .timeline {
+      position: relative;
+      padding-left: 0;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 0; 
+      bottom: 0;
+      left: 242px;
+      width: 1px;
+      background: var(--color-border);
+    }
+
+    .entry {
+      position: relative;
+      display: flex;
+      margin-bottom: var(--spacing-2xl);
+      padding: var(--spacing-md) 0;
+      transition: all var(--transition-base);
+      cursor: default;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: entrySlideIn 0.6s ease-out forwards;
+    }
+    
+    /* Stagger entry animations */
+    .entry:nth-child(1) { animation-delay: 0.1s; }
+    .entry:nth-child(2) { animation-delay: 0.2s; }
+    .entry:nth-child(3) { animation-delay: 0.3s; }
+    .entry:nth-child(4) { animation-delay: 0.4s; }
+    .entry:nth-child(5) { animation-delay: 0.5s; }
+    .entry:nth-child(6) { animation-delay: 0.6s; }
+    .entry:nth-child(7) { animation-delay: 0.7s; }
+    .entry:nth-child(8) { animation-delay: 0.8s; }
+    .entry:nth-child(9) { animation-delay: 0.9s; }
+    .entry:nth-child(10) { animation-delay: 1.0s; }
+    
+    @keyframes entrySlideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .entry:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Timeline dot - clean and minimal */
+    .entry::before {
+      content: '';
+      position: absolute;
+      left: 242px;
+      top: var(--spacing-lg);
+      transform: translateX(-50%);
+      width: 8px; 
+      height: 8px;
+      background: var(--color-secondary);
+      border: 2px solid var(--color-bg);
+      border-radius: 50%;
+      z-index: 2;
+      transition: all var(--transition-base);
+    }
+
+    .entry:hover::before {
+      background: var(--color-primary);
+      transform: translateX(-50%) scale(1.2);
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .company { 
+      flex: 0 0 220px; 
+      font-size: var(--font-lg); 
+      font-weight: 300; 
+      text-transform: uppercase; 
+      color: var(--color-tertiary); 
+      align-self: flex-start;
+      letter-spacing: 0.05em;
+      padding-top: var(--spacing-sm);
+    }
+    
+    .details { 
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; 
+      padding-left: var(--spacing-2xl); 
+      /* Removed background and padding for minimalistic look */
+    }
+    
+    .details time { 
+      font-size: var(--font-xs); 
+      color: var(--color-light);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    
+    .role { 
+      font-size: var(--font-lg); 
+      color: var(--color-secondary); 
+      margin-top: var(--spacing-xs); 
+      font-weight: 400;
+      line-height: 1.3;
+    }
+    
+    .desc { 
+      font-size: var(--font-sm); 
+      color: var(--color-muted); 
+      margin-top: var(--spacing-md);
+      line-height: 1.6;
+    }
+    
+    .expand-trigger { 
+      text-align: center; 
+      cursor: pointer; 
+      color: var(--color-secondary); 
+      opacity: 0.8; 
+      padding: var(--spacing-md) var(--spacing-xl); 
+      user-select: none;
+      font-size: var(--font-sm);
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: all var(--transition-fast);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      background: var(--color-bg);
+      margin-top: var(--spacing-xl);
+      display: inline-block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .expand-trigger:hover { 
+      opacity: 1;
+      background: var(--color-secondary);
+      color: var(--color-bg);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ═══════════════════ PUBLICATIONS - FIXED POSITIONING ═══════════════════ */
+    .publications-grid {
+        display: grid;
+      gap: var(--spacing-lg);
+    }
+    
+    .publication-card {
+      background: none;
+      border: none;
+      border-radius: 0;
+      padding: var(--spacing-xl) 0;
+      transition: none; /* Remove animations */
+      position: relative;
+      overflow: visible;
+      box-shadow: none;
+      border-bottom: 1px solid var(--color-border-light);
+      padding-right: 0; /* Remove space for button */
+    }
+    
+    .publication-card::before {
+      display: none;
+    }
+    
+    .publication-card:hover {
+      transform: none; /* Remove hover animation */
+      box-shadow: none; /* Remove hover shadow */
+    }
+    
+    .publication-title {
+      font-size: var(--font-lg);
+      font-weight: 500;
+      color: var(--color-secondary);
+      margin-bottom: var(--spacing-sm);
+      line-height: 1.4;
+    }
+    
+    .publication-venue {
+      color: var(--color-accent);
+      font-weight: 500;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .publication-date {
+      color: var(--color-light);
+      font-size: var(--font-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .publication-link {
+      position: static; /* Remove absolute positioning */
+      display: inline-block;
+      margin-top: var(--spacing-md);
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--color-accent);
+      color: var(--color-bg);
+      border-radius: var(--radius-md);
+      font-size: var(--font-xs);
+      text-decoration: none;
+      transition: none; /* Remove animations */
+      font-weight: 500;
+    }
+    
+    .publication-link:hover {
+      background: var(--color-accent); /* No change on hover */
+      transform: none; /* Remove hover animation */
+    }
+
+    /* ═══════════════════ PROJECTS - REDESIGNED ═══════════════════ */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: var(--spacing-xl);
+      margin-top: var(--spacing-lg);
+    }
+    
+    .project-card {
+      background: none;
+      border: none;
+      border-radius: 0;
+      padding: var(--spacing-lg) 0;
+      transition: none; /* Remove animations */
+      cursor: default; /* Change from pointer to default */
+      position: relative;
+      overflow: visible;
+      box-shadow: none;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .project-card::before {
+      display: none;
+    }
+    
+    .project-card:hover {
+      transform: none; /* Remove hover animation */
+    }
+    
+    .project-header {
         display: flex;
-        justify-content: space-between; /* This spreads the items out evenly */
-        margin-top: 2rem;
-        padding: 0 10%; /* Add padding on both sides to create space from edges */
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .project-title {
+      font-size: var(--font-lg);
+      font-weight: 500;
+      color: var(--color-secondary);
+      line-height: 1.3;
+      margin: 0;
+    }
+    
+    .project-date {
+      font-size: var(--font-xs);
+      color: var(--color-light);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      margin-left: var(--spacing-md);
+    }
+    
+    .project-description {
+      color: var(--color-muted);
+      line-height: 1.6;
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .project-links {
+      display: flex;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: none;
+      color: var(--color-accent);
+      border: 1px solid var(--color-accent);
+      border-radius: var(--radius-md);
+      font-size: var(--font-xs);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+    }
+    
+    .project-link:hover {
+      background: var(--color-accent);
+      color: var(--color-bg);
+      transform: translateY(-1px);
+    }
+    
+    .project-tech {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-sm);
+    }
+    
+    .tech-tag {
+      display: inline-block;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background: var(--color-bg-secondary);
+      color: var(--color-muted);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-xs);
+      font-weight: 500;
+    }
+
+    /* Remove old project styles */
+    .project, .project-content, .divider, .project-details, .show-more-btn, .popup {
+      display: none;
+    }
+
+    /* ═══════════════════ PUBLICATIONS - REDESIGNED ═══════════════════ */
+    .publications-grid {
+      display: grid;
+      gap: var(--spacing-lg);
+    }
+    
+    .publication-card {
+      background: none;
+      border: none;
+      border-radius: 0;
+      padding: var(--spacing-xl) 0;
+      transition: none; /* Remove animations */
+      position: relative;
+      overflow: visible;
+      box-shadow: none;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .publication-card::before {
+      display: none;
+    }
+    
+    .publication-card:hover {
+      transform: none; /* Remove hover animation */
+      box-shadow: none; /* Remove hover shadow */
+    }
+    
+    .publication-title {
+      font-size: var(--font-lg);
+      font-weight: 500;
+      color: var(--color-secondary);
+      margin-bottom: var(--spacing-sm);
+      line-height: 1.4;
+    }
+    
+    .publication-venue {
+      color: var(--color-accent);
+      font-weight: 500;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .publication-date {
+      color: var(--color-light);
+      font-size: var(--font-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .publication-link {
+      position: static; /* Remove absolute positioning */
+      display: inline-block;
+      margin-top: var(--spacing-md);
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--color-accent);
+      color: var(--color-bg);
+      border-radius: var(--radius-md);
+      font-size: var(--font-xs);
+      text-decoration: none;
+      transition: none; /* Remove animations */
+    }
+    
+    .publication-link:hover {
+      background: var(--color-accent); /* No change on hover */
+      transform: none; /* Remove hover animation */
+    }
+
+    /* ═══════════════════ PATENTS - REDESIGNED ═══════════════════ */
+    .patents-grid {
+      display: grid;
+      gap: var(--spacing-lg);
+    }
+    
+    .patent-card {
+      background: none;
+      border: none;
+      border-radius: 0;
+      padding: var(--spacing-xl) 0;
+      transition: none; /* Remove animations */
+      position: relative;
+      box-shadow: none;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .patent-card::before {
+      display: none;
+    }
+    
+    .patent-card:hover {
+      transform: none; /* Remove hover animation */
+      box-shadow: none; /* Remove hover shadow */
+      background: none; /* Remove background change */
+    }
+    
+    .patent-title {
+      font-size: var(--font-lg);
+      font-weight: 500;
+      color: var(--color-secondary);
+      margin-bottom: var(--spacing-md);
+      line-height: 1.4;
+      padding-right: 0; /* Remove padding for copyright symbol */
+    }
+    
+    .patent-number {
+      color: var(--color-accent);
+      font-weight: 600;
+      font-family: 'Courier New', monospace;
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .patent-date {
+      color: var(--color-light);
+      font-size: var(--font-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .patent-link {
+      display: inline-block;
+      margin-top: var(--spacing-md);
+      padding: var(--spacing-sm) var(--spacing-lg);
+      background: var(--color-accent);
+      color: var(--color-bg);
+      border: none;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      transition: none; /* Remove animations */
+    }
+    
+    .patent-link:hover {
+      background: var(--color-accent); /* No change on hover */
+      color: var(--color-bg); /* No change on hover */
+      border-color: transparent; /* No change on hover */
+      transform: none; /* Remove hover animation */
+    }
+
+    /* ═══════════════════ HONORS & AWARDS - REDESIGNED ═══════════════════ */
+    .honors-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--spacing-lg);
+    }
+    
+    .honor-card {
+      background: radial-gradient(circle at top right, var(--color-bg-alt) 0%, var(--color-bg) 100%);
+      border: none; /* Remove border */
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      transition: all var(--transition-base);
+      position: relative;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .honor-card::before {
+      content: attr(data-icon);
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 50px;
+      background: var(--color-bg);
+      border: none; /* Remove border */
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      transition: all var(--transition-base);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .honor-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      background: var(--color-bg);
+    }
+    
+    .honor-card:hover::before {
+      background: var(--color-accent);
+      color: var(--color-bg);
+      transform: translateX(-50%) scale(1.1);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .honor-title {
+      font-size: var(--font-lg);
+      font-weight: 500;
+      color: var(--color-secondary);
+      margin-bottom: var(--spacing-sm);
+      margin-top: var(--spacing-lg);
+      line-height: 1.3;
+    }
+    
+    .honor-issuer {
+      color: var(--color-muted);
+      font-weight: 500;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .honor-date {
+      color: var(--color-light);
+      font-size: var(--font-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ═══════════════════ CONTACT - REDESIGNED ═══════════════════ */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--spacing-lg);
+    }
+    
+    .contact-card {
+      background: var(--color-bg-alt);
+      border: none; /* Remove border */
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      transition: all var(--transition-base);
+      text-align: center;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .contact-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      background: var(--color-bg);
+    }
+    
+    .contact-icon {
+      width: 50px;
+      height: 50px;
+      background: var(--color-bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--spacing-md);
+      font-size: 1.2rem;
+      transition: all var(--transition-base);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .contact-card:hover .contact-icon {
+      background: var(--color-accent);
+      color: var(--color-bg);
+      transform: scale(1.1);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .contact-label {
+      font-size: var(--font-xs);
+      color: var(--color-light);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .contact-value {
+      font-size: var(--font-base);
+      color: var(--color-secondary);
+      font-weight: 500;
+    }
+    
+    .contact-link {
+      color: inherit;
+      text-decoration: none;
+    }
+    
+    .contact-link:hover {
+      color: var(--color-accent);
+    }
+
+    /* Remove old list-section styles for redesigned sections */
+    #publications .list-section,
+    #patents .list-section,
+    #honors .list-section,
+    #contact .list-section {
+      display: none;
+    }
+
+    /* ═══════════════════ SKILLS & CERTIFICATIONS ═══════════════════ */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: var(--spacing-2xl);
+      margin-top: var(--spacing-3xl);
+      margin-bottom: var(--spacing-3xl);
+    }
+    
+    /* Updated Skills Styles - Borderless and Full Width */
+    #skills {
+      display: block; /* Override section flex */
+    }
+    
+    #skills .section-content {
+      display: block; /* Change from grid to block */
+      max-width: none;
         width: 100%;
+      margin-top: var(--spacing-xl);
     }
-    .edu-logo { 
+    
+    .left-column, .right-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Two columns within each half */
+      gap: var(--spacing-3xl);
+      margin-bottom: var(--spacing-2xl);
+    }
+    
+    /* Alternative approach - make it a single grid container */
+    #skills .section-content {
+      display: grid;
+      grid-template-columns: 1fr; /* Single column container */
+      gap: 0;
+      max-width: none;
+      width: 100%;
+      margin-top: var(--spacing-xl);
+    }
+    
+    .left-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Two categories side by side */
+      gap: var(--spacing-3xl);
+      margin-bottom: var(--spacing-2xl);
+    }
+    
+    .right-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Two categories side by side */
+      gap: var(--spacing-3xl);
+    }
+    
+    .skill-category {
+      margin-bottom: 0;
+      width: 100%;
+    }
+    
+    .skill-category h3 {
+      font-size: var(--font-base);
+      font-weight: 500;
+      color: var(--color-secondary);
+      margin-bottom: var(--spacing-lg);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding-bottom: var(--spacing-sm);
+      position: relative;
+    }
+    
+    .skill-category h3::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 30px;
+      height: 2px;
+      background: var(--color-accent);
+    }
+    
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-md); /* Balanced gap for better distribution */
+      justify-content: flex-start;
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .skill-tag {
+      display: inline-block;
+      padding: var(--spacing-sm) var(--spacing-lg); /* More reasonable padding */
+      background: var(--color-bg-alt);
+      border: none;
+      border-radius: var(--radius-lg);
+      font-size: var(--font-xs); /* Keep font size manageable */
+      color: var(--color-muted);
+      font-weight: 400;
+      transition: all var(--transition-base);
+      cursor: default;
+      min-width: fit-content;
+      white-space: nowrap;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .skill-tag:hover {
+      background: var(--color-accent);
+      color: var(--color-bg);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Professional Training Styles - Borderless */
+    .certifications-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--spacing-xl);
+    }
+    
+    .cert-card {
+      background: var(--color-bg-alt);
+      border: none; /* Remove border */
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-2xl);
+      transition: all var(--transition-base);
         text-align: center; 
-        flex: 0 0 40%;
+      position: relative;
+      cursor: default;
+      box-shadow: var(--shadow-sm);
     }
-    .edu-logo img { width: 80px; height: auto; filter: grayscale(100%); }
-    .edu-logo .school-name { margin-top: 1rem; font-size: 1rem; font-weight: 200; letter-spacing: .1em; text-transform: uppercase; color: #666; }
-    .edu-logo .degree-date { font-size: .85rem; font-style: italic; color: #888; margin-top: .25rem; }
+    
+    .cert-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      background: var(--color-bg);
+    }
+    
+    .cert-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--color-bg);
+      border: none; /* Remove border */
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--spacing-lg);
+      font-size: 1.5rem;
+      transition: all var(--transition-base);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .cert-card:hover .cert-icon {
+      background: var(--color-accent);
+      color: var(--color-bg);
+      transform: scale(1.1);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .cert-title {
+      font-size: var(--font-lg);
+      font-weight: 500;
+      color: var(--color-secondary);
+      margin-bottom: var(--spacing-sm);
+      line-height: 1.3;
+    }
+    
+    .cert-issuer {
+      font-size: var(--font-base);
+      color: var(--color-accent);
+      font-weight: 500;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .cert-year {
+      font-size: var(--font-xs);
+      color: var(--color-light);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 500;
+    }
 
-    /* Publications, Patents, Honors */
-    .list-section ul { display: grid; grid-template-columns: 1fr; row-gap: 1rem; padding: 0; margin: 0; }
-    .list-section li { font-size: .95rem; color: #444; }
+    /* ═══════════════════ EDUCATION - ENHANCED DESIGN (BORDERLESS) ═══════════════════ */
+    .education-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-3xl);
+      margin-top: var(--spacing-2xl);
+    }
+    
+    .education-card {
+      background: none;
+      border: none;
+      border-radius: 0;
+      padding: var(--spacing-lg) 0;
+      transition: none; /* Remove animations */
+      cursor: default;
+      position: relative;
+      overflow: visible;
+      box-shadow: none;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .education-card::before {
+      display: none;
+    }
+    
+    .education-card:hover {
+      transform: none; /* Remove hover animation */
+    }
+    
+    .university-name {
+      font-size: var(--font-xl);
+      font-weight: 400;
+      color: var(--color-secondary);
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+      margin-bottom: var(--spacing-sm);
+      transition: none; /* Remove animations */
+    }
+    
+    .education-card:hover .university-name {
+      color: var(--color-secondary); /* No color change on hover */
+    }
+    
+    .degree-program {
+      font-size: var(--font-base);
+      color: var(--color-muted);
+      font-weight: 300;
+      line-height: 1.4;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .degree-years {
+      font-size: var(--font-xs);
+      color: var(--color-light);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
 
-    /* Contact */
-    #contact ul { display: flex; flex-direction: column; gap: .5rem; }
-    #contact li { font-size: .95rem; color: #444; }
-/* ─────────────────  GENERIC LIST SECTIONS  ───────────────── */
+    /* Remove old education styles */
+    .edu-logos, .edu-logo {
+      display: none;
+    }
 
-/* make every <section class="list-section"> share a simple grid */
-    .list-section .section-content ul{
-  list-style:none;
-  margin:0; padding:0;
-  display:grid;
-  grid-template-columns:1fr;          /* stack by default        */
-  row-gap:1rem;
-}
+    /* ═══════════════════ GENERIC LIST SECTIONS ═══════════════════ */
+    .list-section .section-content ul {
+      list-style: none;
+      margin: 0; 
+      padding: 0;
+      display: grid;
+      grid-template-columns: 1fr;
+      row-gap: var(--spacing-lg);
+    }
 
-/* when there are many items (≥4) widen to two balanced columns */
-@media(min-width:700px){
+    @media(min-width: 700px) {
   #honors .section-content ul,
   #publications .section-content ul,
-  #patents .section-content ul{
-    grid-template-columns:1fr 1fr;    /* two equal columns       */
-    column-gap:2.5rem;
-  }
-}
+      #patents .section-content ul {
+        grid-template-columns: 1fr 1fr;
+        column-gap: var(--spacing-2xl);
+      }
+    }
 
-/* list row */
-.list-section li{
-  position:relative;
-  padding-left:1.5rem;               /* leave room for bullet   */
-  font-size:.95rem;
-  line-height:1.4;
-  color:#444;
-}
+    .list-section li {
+      position: relative;
+      padding-left: var(--spacing-lg);
+      font-size: var(--font-sm);
+      line-height: 1.6;
+      color: var(--color-muted);
+      transition: all var(--transition-fast);
+      border-radius: var(--radius-sm);
+      padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) var(--spacing-lg);
+    }
+    
+    .list-section li:hover {
+      color: var(--color-secondary);
+      background: var(--color-bg-alt);
+      transform: translateX(4px);
+    }
 
-/* minimalist black bullet */
-.list-section li::before{
-  content:'';
-  position:absolute;
-  left:0;
-  top:.55em;                          /* optically centres bullet */
-  width:6px; height:6px;
-  border-radius:50%;
-  background:#111;
-}
+    .list-section li::before {
+      content: '';
+      position: absolute;
+      left: var(--spacing-sm);
+      top: 0.8em;
+      width: 6px; 
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-secondary);
+      transition: all var(--transition-fast);
+    }
+    
+    .list-section li:hover::before {
+      background: var(--color-primary);
+      transform: scale(1.3);
+    }
 
-/* emphasise titles inside a list item (optional) */
-.list-section strong{ color:#111; }
+    .list-section strong { 
+      color: var(--color-secondary);
+      font-weight: 500;
+    }
+    
+    .list-section a {
+      color: var(--color-accent);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+    }
 
-/* ─────────────────  CONTACT  ───────────────── */
+    /* ═══════════════════ RESPONSIVE DESIGN ═══════════════════ */
+    @media (max-width: 768px) {
+      :root {
+        --font-2xl: clamp(2.5rem, 8vw, 3.5rem);
+      }
+      
+      main {
+        margin-left: 0;
+        padding: var(--spacing-xl) var(--spacing-lg);
+      }
+      
+      #side-nav {
+        transform: translateX(-100%);
+        transition: transform var(--transition-base);
+      }
+      
+      #side-nav.mobile-open {
+        transform: translateX(0);
+        width: 100%;
+        z-index: 1001;
+      }
+      
+      header {
+        flex-direction: column;
+        text-align: center;
+        padding: var(--spacing-2xl) 0;
+      }
+      
+      .info {
+        padding-left: 0;
+        margin-top: var(--spacing-xl);
+        text-align: center;
+      }
+      
+      section {
+        flex-direction: column;
+      }
+      
+      .section-header {
+        flex: none;
+        margin-bottom: var(--spacing-lg);
+        position: static;
+      }
+      
+      .two-col {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-xl);
+      }
+      
+      /* Mobile Skills Layout */
+      #skills .section-content {
+        grid-template-columns: 1fr; /* Single column on mobile */
+        gap: var(--spacing-xl);
+      }
+      
+      .skill-tags {
+        gap: var(--spacing-sm); /* Smaller gap on mobile for better fit */
+      }
+      
+      .skill-tag {
+        padding: var(--spacing-sm) var(--spacing-md); /* Smaller padding on mobile */
+        font-size: var(--font-xs);
+      }
+      
+      .project {
+        flex-direction: column;
+      }
+      
+      .project-title {
+        flex: none;
+        margin-bottom: var(--spacing-md);
+      }
+      
+      .project-content {
+        flex-direction: column;
+      }
+      
+      .divider {
+        width: 100%;
+        height: 1px;
+        margin: var(--spacing-md) 0;
+      }
+      
+      .edu-logos {
+        flex-direction: column;
+        padding: 0;
+      }
+      
+      .edu-logo {
+        flex: none;
+      }
+    }
 
-#contact .section-content ul{
-  list-style:none;
-  margin:0; padding:0;
-  display:flex;
-  flex-direction:column;
-  gap:.75rem;
-}
-#contact li{
-  font-size:.95rem;
-  color:#444;
-  display:flex;
-  align-items:center;
-}
-#contact li::before{
-  content:'';
-  width:6px; height:6px;
-  border-radius:50%;
-  background:#111;
-  margin-right:.75rem;
-}
+    /* ═══════════════════ ACCESSIBILITY & FOCUS STATES ═══════════════════ */
+    *:focus {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+    
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
 
+    /* ═══════════════════ LOADING STATES ═══════════════════ */
+    .loading {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.6s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
+    /* ═══════════════════ PRINT STYLES ═══════════════════ */
+    @media print {
+      #side-nav, .expand-trigger, .show-more-btn, .popup {
+        display: none !important;
+      }
+      
+      main {
+        margin-left: 0;
+        padding: 0;
+      }
+      
+      section {
+        page-break-inside: avoid;
+        margin-bottom: var(--spacing-lg);
+      }
+      
+      .timeline::before {
+        display: none;
+      }
+      
+      .entry::before {
+        display: none;
+      }
+    }
+
+    /* ═══════════════════ ABOUT SECTION ═══════════════════ */
+    .about-content {
+      max-width: 800px;
+    }
+    
+    .about-content p {
+      font-size: var(--font-lg);
+      line-height: 1.8;
+      color: var(--color-muted);
+      font-weight: 300;
+    }
+
+    /* ═══════════════════ RESEARCH EXPERIENCE - MINIMALIST DESIGN ═══════════════════ */
+    .research-grid {
+      display: grid;
+      gap: var(--spacing-2xl);
+    }
+
+    .research-card {
+      background: none;
+      border: none;
+      border-radius: 0;
+      padding: var(--spacing-lg) 0;
+      transition: all var(--transition-base);
+      position: relative;
+      box-shadow: none;
+      display: block;
+      margin-bottom: 0;
+      cursor: default;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .research-card::before {
+      display: none;
+    }
+    
+    .research-card:hover {
+      transform: translateY(-1px);
+    }
+    
+    .research-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .research-title {
+      font-size: var(--font-lg);
+      font-weight: 500;
+      color: var(--color-secondary);
+      margin: 0;
+      line-height: 1.3;
+    }
+    
+    .research-date {
+      font-size: var(--font-xs);
+      color: var(--color-light);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+      margin-left: var(--spacing-md);
+    }
+    
+    .research-institution {
+      font-size: var(--font-base);
+      color: var(--color-accent);
+      font-weight: 500;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .research-description {
+      font-size: var(--font-sm);
+      color: var(--color-muted);
+      line-height: 1.6;
+    }
+
+    /* ═══════════════════ PROJECTS - NO GREY BACKGROUNDS ═══════════════════ */
+    .project-card {
+      background: none;
+      border: none;
+      border-radius: 0;
+      padding: var(--spacing-lg) 0;
+      transition: none; /* Remove animations */
+      cursor: default; /* Change from pointer to default */
+      position: relative;
+      overflow: visible;
+      box-shadow: none;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .project-card::before {
+      display: none;
+    }
+    
+    .project-card:hover {
+      transform: none; /* Remove hover animation */
+    }
+    
+    .project-header {
+        display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .project-title {
+      font-size: var(--font-lg);
+      font-weight: 500;
+      color: var(--color-secondary);
+      line-height: 1.3;
+      margin: 0;
+    }
+    
+    .project-date {
+      font-size: var(--font-xs);
+      color: var(--color-light);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      margin-left: var(--spacing-md);
+    }
+    
+    .project-description {
+      color: var(--color-muted);
+      line-height: 1.6;
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .project-links {
+      display: flex;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: none;
+      color: var(--color-accent);
+      border: 1px solid var(--color-accent);
+      border-radius: var(--radius-md);
+      font-size: var(--font-xs);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+    }
+    
+    .project-link:hover {
+      background: var(--color-accent);
+      color: var(--color-bg);
+      transform: translateY(-1px);
+    }
+    
+    .project-tech {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-sm);
+    }
+    
+    .tech-tag {
+      display: inline-block;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background: var(--color-bg-secondary);
+      color: var(--color-muted);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-xs);
+      font-weight: 500;
+    }
+
+    /* ═══════════════════ EDUCATION - NO ANIMATIONS ═══════════════════ */
+    .education-card {
+      background: none;
+      border: none;
+      border-radius: 0;
+      padding: var(--spacing-lg) 0;
+      transition: none; /* Remove animations */
+      cursor: default;
+      position: relative;
+      overflow: visible;
+      box-shadow: none;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .education-card::before {
+      display: none;
+    }
+    
+    .education-card:hover {
+      transform: none; /* Remove hover animation */
+    }
+    
+    .university-name {
+      font-size: var(--font-xl);
+      font-weight: 400;
+      color: var(--color-secondary);
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+      margin-bottom: var(--spacing-sm);
+      transition: none; /* Remove animations */
+    }
+    
+    .education-card:hover .university-name {
+      color: var(--color-secondary); /* No color change on hover */
+    }
+    
+    .degree-program {
+      font-size: var(--font-base);
+      color: var(--color-muted);
+      font-weight: 300;
+      line-height: 1.4;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .degree-years {
+      font-size: var(--font-xs);
+      color: var(--color-light);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* ═══════════════════ PUBLICATIONS - NO ANIMATIONS ═══════════════════ */
+    .publication-card {
+      background: none;
+      border: none;
+      border-radius: 0;
+      padding: var(--spacing-lg) 0;
+      transition: none; /* Remove animations */
+      position: relative;
+      overflow: visible;
+      box-shadow: none;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .publication-card::before {
+      display: none;
+    }
+    
+    .publication-card:hover {
+      transform: none; /* Remove hover animation */
+    }
+    
+    .publication-year {
+      font-size: var(--font-xs);
+      color: var(--color-light);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .publication-title {
+      font-size: var(--font-lg);
+      font-weight: 500;
+      color: var(--color-secondary);
+      margin-bottom: var(--spacing-sm);
+      line-height: 1.4;
+    }
+    
+    .publication-authors {
+      font-size: var(--font-sm);
+      color: var(--color-muted);
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .publication-venue {
+      color: var(--color-accent);
+      font-weight: 500;
+      margin-bottom: var(--spacing-md);
+      font-size: var(--font-sm);
+    }
+    
+    .publication-btn {
+      display: inline-block;
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--color-accent);
+      color: var(--color-bg);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: var(--font-xs);
+      text-decoration: none;
+      transition: none; /* Remove animations */
+      font-weight: 500;
+      cursor: pointer;
+    }
+    
+    .publication-btn:hover {
+      background: var(--color-accent); /* No change on hover */
+      transform: none; /* Remove hover animation */
+    }
+
+    /* ═══════════════════ SERVICE & LEADERSHIP - MINIMALIST ═══════════════════ */
+    .service-grid {
+      display: grid;
+      gap: var(--spacing-2xl);
+    }
+    
+    .service-card {
+      background: none;
+      border: none;
+      border-radius: 0;
+      padding: var(--spacing-lg) 0;
+      transition: none; /* Remove animations */
+      position: relative;
+      box-shadow: none;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .service-card::before {
+      display: none;
+    }
+    
+    .service-card:hover {
+      transform: none; /* Remove hover animation */
+    }
+    
+    .service-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .service-title {
+      font-size: var(--font-lg);
+      font-weight: 500;
+      color: var(--color-secondary);
+      margin: 0;
+      line-height: 1.3;
+    }
+    
+    .service-years {
+      font-size: var(--font-xs);
+      color: var(--color-light);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      margin-left: var(--spacing-md);
+    }
+    
+    .service-role {
+      font-size: var(--font-base);
+      color: var(--color-accent);
+      font-weight: 500;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .service-description {
+      font-size: var(--font-sm);
+      color: var(--color-muted);
+      line-height: 1.6;
+    }
+
+    /* ═══════════════════ LANGUAGES - MINIMALIST ═══════════════════ */
+    .languages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--spacing-2xl);
+    }
+    
+    .language-card {
+      background: none;
+      border: none;
+      border-radius: 0;
+      padding: var(--spacing-lg) 0;
+      transition: none; /* Remove animations */
+      text-align: left;
+      position: relative;
+      box-shadow: none;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .language-card:hover {
+      transform: none; /* Remove hover animation */
+    }
+    
+    .language-name {
+      font-size: var(--font-lg);
+      font-weight: 500;
+      color: var(--color-secondary);
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .language-level {
+      font-size: var(--font-sm);
+      color: var(--color-muted);
+      font-weight: 400;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .language-proficiency {
+      margin-top: var(--spacing-sm);
+      height: 4px;
+      background: var(--color-border-light);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+    
+    .proficiency-bar {
+      height: 100%;
+      background: var(--color-accent);
+      border-radius: var(--radius-sm);
+      transition: none; /* Remove animations */
+    }
+    
+    .proficiency-native { width: 100%; }
+    .proficiency-fluent { width: 90%; }
+    .proficiency-intermediate { width: 70%; }
+    .proficiency-basic { width: 40%; }
+
+    /* ═══════════════════ PROFESSIONAL AFFILIATIONS - MINIMALIST ═══════════════════ */
+    .affiliations-grid {
+      display: grid;
+      gap: var(--spacing-2xl);
+    }
+    
+    .affiliation-card {
+      background: none;
+      border: none;
+      border-radius: 0;
+      padding: var(--spacing-lg) 0;
+      transition: none; /* Remove animations */
+      position: relative;
+      text-align: left;
+      box-shadow: none;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .affiliation-card::before {
+      display: none;
+    }
+    
+    .affiliation-card:hover {
+      transform: none; /* Remove hover animation */
+    }
+    
+    .affiliation-title {
+      font-size: var(--font-lg);
+      font-weight: 500;
+      color: var(--color-secondary);
+      margin-bottom: var(--spacing-sm);
+      line-height: 1.3;
+    }
+    
+    .affiliation-org {
+      font-size: var(--font-base);
+      color: var(--color-accent);
+      font-weight: 500;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .affiliation-year {
+      font-size: var(--font-xs);
+      color: var(--color-light);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 500;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .affiliation-description {
+      font-size: var(--font-sm);
+      color: var(--color-muted);
+      line-height: 1.6;
+    }
+
+    /* ═══════════════════ PATENTS - MINIMALIST ═══════════════════ */
+    .patents-grid {
+      display: grid;
+      gap: var(--spacing-2xl);
+    }
+    
+    .patent-card {
+      background: none;
+      border: none;
+      border-radius: 0;
+      padding: var(--spacing-lg) 0;
+      transition: none; /* Remove animations */
+      position: relative;
+      box-shadow: none;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .patent-card::before {
+      display: none;
+    }
+    
+    .patent-card:hover {
+      transform: none; /* Remove hover animation */
+    }
+    
+    .patent-title {
+      font-size: var(--font-lg);
+      font-weight: 500;
+      color: var(--color-secondary);
+      margin-bottom: var(--spacing-md);
+      line-height: 1.4;
+    }
+    
+    .patent-number {
+      color: var(--color-accent);
+      font-weight: 600;
+      font-family: 'Courier New', monospace;
+      margin-bottom: var(--spacing-sm);
+      font-size: var(--font-sm);
+    }
+    
+    .patent-date {
+      color: var(--color-light);
+      font-size: var(--font-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .patent-link {
+      display: inline-block;
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--color-accent);
+      color: var(--color-bg);
+      border: none;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      transition: none; /* Remove animations */
+      font-size: var(--font-xs);
+      font-weight: 500;
+    }
+    
+    .patent-link:hover {
+      background: var(--color-accent); /* No change on hover */
+      transform: none; /* Remove hover animation */
+    }
+
+    /* ═══════════════════ EDUCATION - ENSURE NO HOVER ANIMATIONS ═══════════════════ */
+    .education-card:hover {
+      transform: none; /* Ensure no hover animation */
+    }
+    
+    .education-card:hover .university-name {
+      color: var(--color-secondary); /* Ensure no color change on hover */
+    }
+
+    /* ═══════════════════ PUBLICATIONS - ENSURE NO HOVER ANIMATIONS ═══════════════════ */
+    .publication-card:hover {
+      transform: none; /* Ensure no hover animation */
+    }
   </style>
 </head>
 <body>
-  <nav id="side-nav">
+  <!-- Skip link for accessibility -->
+  <a href="#main-content" class="sr-only">Skip to main content</a>
+  
+  <div id="intro" role="banner" aria-label="Introduction">
+    <h1 class="intro-name">
+      <span id="typed" aria-live="polite"></span>
+      <span class="cursor" aria-hidden="true"></span>
+    </h1>
+  </div>
+  
+  <nav id="side-nav" role="navigation" aria-label="Main navigation">
     <ul>
-      <li><a href="#">Home</a></li>
+      <li><a href="#main-content">Home</a></li>
+      <li><a href="#about">About</a></li>
       <li><a href="#experience">Experience</a></li>
+      <li><a href="#research">Research</a></li>
       <li><a href="#skills">Skills</a></li>
       <li><a href="#certifications">Certifications</a></li>
       <li><a href="#projects">Projects</a></li>
@@ -288,89 +1977,213 @@
       <li><a href="#publications">Publications</a></li>
       <li><a href="#patents">Patents</a></li>
       <li><a href="#honors">Honors</a></li>
+      <li><a href="#service">Service</a></li>
+      <li><a href="#affiliations">Affiliations</a></li>
+      <li><a href="#languages">Languages</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
   </nav>
-  <main>
+  
+  <main id="main-content">
     <header>
       <div class="name">Junseok Joon Kang</div>
       <div class="info">
-        <div class="school-item"><div class="school-name">Harvard University</div><div class="degree">MS, Computational Science & Engineering</div></div>
-        <div class="school-item"><div class="school-name">Franklin W. Olin College of Engineering</div><div class="degree">BS, Computer Science</div></div>
+        <div class="school-item">
+          <div class="school-name">Harvard University</div>
+          <div class="degree">MS, Computational Science & Engineering</div>
+        </div>
+        <div class="school-item">
+          <div class="school-name">Franklin W. Olin College of Engineering</div>
+          <div class="degree">BS, Computer Science</div>
+        </div>
         <div class="roles">Software Engineer • Data Scientist • Full‑Stack Developer</div>
       </div>
     </header>
+
+    <section id="about">
+      <div class="section-header"><span class="bar"></span><h2>About</h2></div>
+      <div class="section-content">
+        <div class="about-content">
+          <p>I am an experienced software engineer with a demonstrated history of working in the computer software industry. Skilled in Computer Science, Data Mining and Manipulation, Modeling, Machine Learning and Back‑end programming. I am a strong engineering professional with a Bachelor's degree focused in Engineering with Computing from the Franklin W. Olin College of Engineering.</p>
+        </div>
+      </div>
+    </section>
+
     <section id="experience">
       <div class="section-header"><span class="bar"></span><h2>Experience</h2></div>
       <div class="section-content">
         <div class="timeline">
-            <div class="entry"><div class="company">US Army</div><div class="details"><time>Sep 2024 – Present</time><div class="role">Soldier (KATUSA)</div><p class="desc">Serving mandatory military service as a KATUSA soldier in the US Eighth Army, Second Infantry Division, HHBN HSC, Office of Staff Judge Advocate.</p></div></div>
-            <div class="entry"><div class="company">Symbotic</div><div class="details"><time>May 2024 – Aug 2024</time><div class="role">Software Engineer Intern</div><p class="desc">Worked on the TeleOperations GUI using Python and PyQt5; researched C++ debugging via Behavior Trees; containerized workflows with Docker.</p></div></div>
-            <div class="entry"><div class="company">ii:eum</div><div class="details"><time>July 2022 – Sept 2023</time><div class="role">Co-Founder & Project Manager</div><p class="desc">Founded a non-profit English education platform; connected underprivileged students with bilingual tutors; managed dev team.</p></div></div>
-            <div class="entry"><div class="company">Amazon Robotics</div><div class="details"><time>Sept 2022 – May 2023</time><div class="role">Project Manager & Software Engineer</div><p class="desc">Developed networking solutions (TCP/IP, VPN) and Flask servers on Ubuntu to interface robotic arms with remote UIs.</p></div></div>
-            <div class="entry"><div class="company">Olin College</div><div class="details"><time>Sept 2022 – Jan 2023</time><div class="role">Data Analytic Researcher</div><p class="desc">Created geospatial data evaluation system; integrity tested navigation apps for the blind.</p></div></div>
-            <div class="entry"><div class="company">Microsoft</div><div class="details"><time>May 2022 – Aug 2022</time><div class="role">Software Engineer Intern</div><p class="desc">Built data pipelines and analytics reports using Python, pandas, seaborn, SQL, Jenkins, KQL, and Azure.</p></div></div>
-            <div class="entry"><div class="company">Motivo</div><div class="details"><time>Dec 2021 – Jan 2022</time><div class="role">Software Engineer Intern</div><p class="desc">Developed REST, XML, and SOAP integrations; built Django-based timekeeping tools.</p></div></div>
-            <div class="entry"><div class="company">Verve Motion</div><div class="details"><time>Sept 2021 – Dec 2021</time><div class="role">Software Engineer Intern</div><p class="desc">Created analytics pages with Firestore; built Python data transfer and visualization tools.</p></div></div>
-            <div class="entry"><div class="company">Olin College</div><div class="details"><time>Jan 2021 – Jun 2021</time><div class="role">Data Management Researcher</div><p class="desc">Analyzed FAA flight and pollutant data; managed ETL into AWS Aurora MySQL.</p></div></div>
-            <div class="entry"><div class="company">Olin College</div><div class="details"><time>Jan 2021 – May 2021</time><div class="role">Teaching Assistant</div><p class="desc">Assisted teaching Software Design (ENGR2510); guided students through design patterns.</p></div></div>
-            <div class="entry"><div class="company">WISE</div><div class="details"><time>May 2020 – Jan 2021</time><div class="role">Advertisement Translator</div><p class="desc">Translated HONGEWHA LED Mask brochure and Purgo Biologics PR videos into English.</p></div></div>
-            <div class="entry"><div class="company">Purgo Biologics</div><div class="details"><time>Mar 2020 – Dec 2020</time><div class="role">Full Stack Developer</div><p class="desc">Built sales prediction and stock management systems using Python, SQL, and PyQt5.</p></div></div>
-            <div class="entry"><div class="company">Olin College</div><div class="details"><time>Apr 2020 </time><div class="role">Robot Trajectory Projection</div><p class="desc">Programmed robot path projection using differential equations.</p></div></div>
-            <div class="entry"><div class="company">Chadwick International</div><div class="details"><time>Jan 2017 – Apr 2017</time><div class="role">Dual OS Virtualization</div><p class="desc">Developed a dual-OS virtualization system splitting CPU processing power.</p></div></div>
+            <div class="entry"><div class="company">US Army</div><div class="details"><time>Sep 2024 – Mar 2026</time><div class="role">KATUSA Sergeant, Office of Staff Judge Advocate</div><p class="desc">Served as a KATUSA Soldier in the 8th Army, 2nd Infantry Division in the Office of Staff Judge Advocate. Translated cases and in court proceedings.</p></div></div>
+            <div class="entry"><div class="company">Symbotic</div><div class="details"><time>May 2024 – Sep 2024</time><div class="role">Software Engineering Intern</div><p class="desc">Worked on the TeleOperations team, adding new and improving features to the existing, deprecated system using Python, PyQt and Internal Engines. Researched potential implementations for better debugging options with BehaviorTrees in core application software of the robotics using C++.</p></div></div>
+            <div class="entry"><div class="company">ii:eum education</div><div class="details"><time>Feb 2022 – Sep 2023</time><div class="role">Co-founder & Project Manager</div><p class="desc">Co-founded a non-profit organization in the field of English Education in Korea, providing platforms to connect underprivileged children to international school students. Leading a team of software engineers as head software developer and project manager, using Jira as a planning tool for developing the website. Developed a website with functionalities such as stream-sharing and personal notebooks, as well as scheduling methods using Python Django, SQL and HTML/CSS.</p></div></div>
+            <div class="entry"><div class="company">Amazon Robotics</div><div class="details"><time>Sep 2022 – May 2023</time><div class="role">Software Engineer & Project Manager</div><p class="desc">Working as a Project Manager and Software Engineer on the SCOPE team of Amazon Robotics at Olin College of Engineering. Developed networking solutions and software systems for robotic automation.</p></div></div>
+            <div class="entry"><div class="company">Microsoft</div><div class="details"><time>May 2022 – Sep 2022</time><div class="role">Software Engineering Intern</div><p class="desc">Worked on a system to parse and convert existing data files to human readable analytic reports on the performance analytic data from 4G/5G performance metrics using Python, Jenkins and Kusto. Developed methods to verify the integrity of data provided by internal infrastructure using Python. Created a report-generating tool that outputs interactive html files that contain formatted and presentable data analytic information using the plotly library.</p></div></div>
+            <div class="entry"><div class="company">Motivo Engineering</div><div class="details"><time>Dec 2021 – Jan 2022</time><div class="role">Software Engineering Intern</div><p class="desc">Replaced the core API that drives the company's timekeeping tool using REST, XML and SOAP Connections and integrated new functions that improves the efficiency of viewing statistics of user data.</p></div></div>
+            <div class="entry"><div class="company">Verve Motion</div><div class="details"><time>Sep 2021 – Dec 2021</time><div class="role">Software Engineering Intern</div><p class="desc">Created data analytic page linked with Google Firestore in the internal website with various functions such as automatic pdf generation and email sending using JS, JQuery and HTML. Developed a data transferring tool to compress and upload non-duplicate and time sensitive data to google cloud storage from the company's local gateways using Python. Developed data analytic tools including data extracting modules from excel files and data integration with firebase, as well as multiple data visualization tools with sqlite and Python.</p></div></div>
+            <div class="entry"><div class="company">SummerBio</div><div class="details"><time>Jun 2022 – Sep 2021</time><div class="role">Automation Engineering Intern</div><p class="desc">Developed software modules in automated throughput for Covid-19 PCR testing using C/WPF. Developed Image Processing Modules for decapper error detection and barcode reading with .NET/C and Winforms, Python and CUDA cores.</p></div></div>
+            <div class="entry"><div class="company">Olin College</div><div class="details"><time>Jan 2021 – Jun 2021</time><div class="role">Software Design Teaching Assistant</div><p class="desc">Teaching assistant at Olin College of Engineering in Software Design (ENGR2510). Taught students basics of coding and logic, code management, version control and other basics of becoming a developer using Python as the main language.</p></div></div>
+            <div class="entry"><div class="company">Purgo Biologics</div><div class="details"><time>Mar 2020 – Dec 2020</time><div class="role">Full Stack Developer</div><p class="desc">Created and deployed web application with full security measures based on Python flask, HTML, CSS, JS and ubuntu server management to assist salespeople with their current sales revenue compared to prior month and provided data on possible focus in certain customers for future reference. Provided categorization to company's customers in terms of potential sales quantity and level of potential purchase rates based on their data using machine learning and data analysis techniques in Python. Produced web application based on Python flask and ubuntu server management on subject of product subsidiary stock management and data visualization for product shipping and manufacturing.</p></div></div>
          </div>
-        <div class="expand-trigger" onclick="showFull()">Expand</div>
+        <div class="expand-trigger" onclick="showFull()">Show More</div>
       </div>
     </section>
-    <section id="skills" class="two-col">
 
-        <!-- ────────────  Skills  ──────────── -->
-        <div class="section-header">
-          <span class="bar"></span><h2>Skills</h2>
-        </div>
+    <section id="research">
+      <div class="section-header"><span class="bar"></span><h2>Research Experience</h2></div>
         <div class="section-content">
-          <ul class="skills-list">
-            <li>Python</li><li>C++</li><li>MPI / OpenMP</li><li>Docker</li><li>Linux</li><li>SQL / MySQL</li>
-            <li>HTML5 & CSS</li><li>JavaScript</li><li>Flask</li><li>Django</li><li>Azure</li><li>AWS</li>
-            <li>R</li><li>MATLAB</li><li>Git</li><li>Jira</li>
-          </ul>
+        <div class="research-grid">
+          <div class="research-card">
+            <div class="research-header">
+              <h3 class="research-title">Data Analytic Researcher</h3>
+              <div class="research-date">Sep 2022 – Current</div>
+            </div>
+            <div class="research-institution">Olin College of Engineering • Prof. Paul Ruvolo</div>
+            <div class="research-description">
+              Constructed a system that allows data evaluation and integrity testing for geospatial location plots and cloud anchors for navigation applications for the blind with professor Paul Ruvolo and the OCCAM Lab at Olin College of Engineering.
+            </div>
         </div>
       
-        <!-- ───────────  Certifications  ─────────── -->
-        <div class="section-header">
-          <span class="bar"></span><h2>Certifications</h2>
+          <div class="research-card">
+            <div class="research-header">
+              <h3 class="research-title">Data Management Researcher</h3>
+              <div class="research-date">Jan 2021 – Jun 2021</div>
         </div>
-        <div class="section-content">
-          <ul class="cert-list">
-      
-            <li>
-              <span class="cert-name">Barista License</span>
-              <span class="cert-meta"> · Specialty Coffee Assoc. — Issued Jun 2023</span>
-            </li>
-      
-            <li>
-              <span class="cert-name">MTA: Intro to Programming Using Python</span>
-              <span class="cert-meta"> · Microsoft — Issued Jan 2021</span>
-            </li>
-      
-            <li>
-              <span class="cert-name">Bilingual IB Diploma</span>
-              <span class="cert-meta"> · International Baccalaureate — Awarded Jun 2019</span>
-            </li>
-      
-            <li>
-              <span class="cert-name">YMCA Certified Lifeguard</span>
-              <span class="cert-meta"> · The Y — Issued Apr 2019</span>
-            </li>
-      
-            <li>
-              <span class="cert-name">Oracle Certified Java SE 6 Programmer</span>
-              <span class="cert-meta"> · Oracle — Issued Mar 2017</span>
-            </li>
-      
-          </ul>
+            <div class="research-institution">Olin College of Engineering • Prof. Scott Hersey</div>
+            <div class="research-description">
+              Created and managed database to contain SWIM Flight Data for tracking and managing anomalies and patterns. Developed internal software to automatically collect, parse, and filter data from source and stream data points into the server for integration. Performed data analysis research on FAA flight data and pollutant levels near Boston Logan International Airport.
+            </div>
+          </div>
+
+          <div class="research-card">
+            <div class="research-header">
+              <h3 class="research-title">Cryptocurrency Data Researcher</h3>
+              <div class="research-date">Jun 2020 – Nov 2020</div>
+            </div>
+            <div class="research-institution">Olin College of Engineering • Prof. Stephanos Matsumoto</div>
+            <div class="research-description">
+              Worked full time as a researcher on the topic of gas consumption and its efficiency in ethereum cryptocurrency. Used multiple data analysis techniques with Python and R to uncover interesting user traits when dealing with faulty transactions, as well as general trends of usage in relation to input of users.
+            </div>
+          </div>
+
+          <div class="research-card">
+            <div class="research-header">
+              <h3 class="research-title">ML and Image Processing Researcher</h3>
+              <div class="research-date">Jun 2018 – Jul 2018</div>
+            </div>
+            <div class="research-institution">Dongguk University • Prof. Donghwan Kim</div>
+            <div class="research-description">
+              Research and development on image processing and machine learning on 3D particles using MATLAB and fourier transformations. Studied methods of error detection in hue and color saturation using computer vision using OpenCV. Published a research article on AMS based on a prototype created in a private company that detects particles and their defects.
+            </div>
+          </div>
         </div>
-      
+      </div>
+    </section>
+
+    <section id="skills" class="two-col">
+      <div class="section-header"><span class="bar"></span><h2>Skills</h2></div>
+      <div class="section-content">
+        <div class="left-column">
+          <div class="skill-category">
+            <h3>Programming Languages</h3>
+            <div class="skill-tags">
+              <span class="skill-tag">Python</span>
+              <span class="skill-tag">Java</span>
+              <span class="skill-tag">C</span>
+              <span class="skill-tag">C++</span>
+              <span class="skill-tag">JavaScript</span>
+              <span class="skill-tag">HTML</span>
+              <span class="skill-tag">CSS</span>
+              <span class="skill-tag">SQL</span>
+              <span class="skill-tag">MATLAB</span>
+              <span class="skill-tag">Golang</span>
+              <span class="skill-tag">OCaml</span>
+              <span class="skill-tag">PHP</span>
+              <span class="skill-tag">LaTeX</span>
+        </div>
+          </div>
+          <div class="skill-category">
+            <h3>Frameworks & Libraries</h3>
+            <div class="skill-tags">
+              <span class="skill-tag">ReactJS</span>
+              <span class="skill-tag">Flask</span>
+              <span class="skill-tag">Django</span>
+              <span class="skill-tag">PyQt</span>
+              <span class="skill-tag">WPF</span>
+              <span class="skill-tag">.NET</span>
+              <span class="skill-tag">WinForms</span>
+              <span class="skill-tag">jQuery</span>
+              <span class="skill-tag">OpenCV</span>
+              <span class="skill-tag">Plotly</span>
+            </div>
+          </div>
+        </div>
+        <div class="right-column">
+          <div class="skill-category">
+            <h3>Technologies & Tools</h3>
+            <div class="skill-tags">
+              <span class="skill-tag">AWS</span>
+              <span class="skill-tag">Azure</span>
+              <span class="skill-tag">Google Cloud</span>
+              <span class="skill-tag">Docker</span>
+              <span class="skill-tag">Jenkins</span>
+              <span class="skill-tag">Jira</span>
+              <span class="skill-tag">Git</span>
+              <span class="skill-tag">Ubuntu</span>
+              <span class="skill-tag">CUDA</span>
+              <span class="skill-tag">Kusto</span>
+              <span class="skill-tag">Firebase</span>
+              <span class="skill-tag">SQLite</span>
+            </div>
+          </div>
+          <div class="skill-category">
+            <h3>Specializations</h3>
+            <div class="skill-tags">
+              <span class="skill-tag">Machine Learning</span>
+              <span class="skill-tag">Data Mining</span>
+              <span class="skill-tag">Computer Vision</span>
+              <span class="skill-tag">Image Processing</span>
+              <span class="skill-tag">Data Analytics</span>
+              <span class="skill-tag">REST APIs</span>
+              <span class="skill-tag">SOAP</span>
+              <span class="skill-tag">XML</span>
+              <span class="skill-tag">TCP/IP</span>
+              <span class="skill-tag">VPN</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="certifications">
+      <div class="section-header"><span class="bar"></span><h2>Professional Training</h2></div>
+      <div class="section-content">
+        <div class="certifications-grid">
+          <div class="cert-card">
+            <div class="cert-icon">🐍</div>
+            <div class="cert-title">MTA 98-381 Python Programming</div>
+            <div class="cert-issuer">Microsoft</div>
+            <div class="cert-year">2021</div>
+          </div>
+          <div class="cert-card">
+            <div class="cert-icon">🏊</div>
+            <div class="cert-title">Certified Lifeguard</div>
+            <div class="cert-issuer">YMCA</div>
+            <div class="cert-year">2019</div>
+          </div>
+          <div class="cert-card">
+            <div class="cert-icon">🌍</div>
+            <div class="cert-title">Bilingual Diploma</div>
+            <div class="cert-issuer">International Baccalaureate</div>
+            <div class="cert-year">2019</div>
+          </div>
+          <div class="cert-card">
+            <div class="cert-icon">☕</div>
+            <div class="cert-title">Oracle Certified Professional Java SE 6</div>
+            <div class="cert-issuer">Oracle</div>
+            <div class="cert-year">2017</div>
+          </div>
+        </div>
+      </div>
       </section>
       
     <section id="projects">
@@ -379,247 +2192,572 @@
         </div>
       
         <div class="section-content">
-      
-         <!-- ───────────── FAA Flight Data Management System ───────────── -->
-<div class="project">
-    <div class="project-title">FAA Flight Data Management System</div>
-  
-    <div class="project-content">
-      <div class="divider"></div>
-  
-      <div class="project-details">
-        <div class="project-date">Jan 2021 – Jun 2021</div>
-        <div class="project-desc">
-          FAA flight data &amp; pollutant analysis; ETL into AWS Aurora MySQL.
-          (<a href="https://github.com/joon628/FAADataSort" target="_blank">Repo</a>)
+        <div class="projects-grid">
+          <div class="project-card">
+            <div class="project-header">
+              <h3 class="project-title">FAA Flight Data Management System</h3>
+              <div class="project-date">Jan 2021 – Jun 2021</div>
         </div>
+            <div class="project-description">
+              Comprehensive flight data analysis and pollutant tracking system with automated ETL pipelines. Built scalable data infrastructure processing 2GB+ daily flight logs with real-time analytics capabilities.
       </div>
-  
-      <button class="show-more-btn" aria-haspopup="dialog">Show&nbsp;more</button>
-  
-      <div class="popup">
-        <strong>Highlights</strong>
-        <ul>
-          <li>Python ETL pipeline processing&nbsp;2 GB/day flight logs</li>
-          <li>Aurora schema design for sub‑second analytical queries</li>
-          <li>Automated pollutant metrics for 50&nbsp;US airports</li>
-        </ul>
+            <div class="project-links">
+              <a href="https://github.com/joon628/FAADataSort" target="_blank" class="project-link">GitHub Repository</a>
       </div>
+            <div class="project-tech">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">AWS Aurora</span>
+              <span class="tech-tag">MySQL</span>
+              <span class="tech-tag">ETL</span>
     </div>
   </div>
   
-  <!-- ───────────── Monte Carlo Tree Search Research Presentation ───────────── -->
-  <div class="project">
-    <div class="project-title">Monte Carlo Tree Search Presentation</div>
-  
-    <div class="project-content">
-      <div class="divider"></div>
-  
-      <div class="project-details">
-        <div class="project-date">Nov 2020 – Dec 2020</div>
-        <div class="project-desc">
-          Presented Monte Carlo Tree Search for Tic‑Tac‑Toe &amp; Minimax.
-          (<a href="https://drive.google.com/drive/folders/1qq217b-Lk9HlNgN5cdYeKdXrNqj-ARSc"
-              target="_blank">Slides</a>)
+          <div class="project-card">
+            <div class="project-header">
+              <h3 class="project-title">Monte Carlo Tree Search Research</h3>
+              <div class="project-date">Nov 2020 – Dec 2020</div>
         </div>
+            <div class="project-description">
+              Advanced game AI research implementing Monte Carlo Tree Search algorithms for strategic gameplay. Presented comprehensive analysis of UCT policy optimization and rollout strategies.
       </div>
-  
-      <button class="show-more-btn" aria-haspopup="dialog">Show&nbsp;more</button>
-  
-      <div class="popup">
-        <strong>Highlights</strong>
-        <ul>
-          <li>Explained UCT &amp; rollout policy tuning</li>
-          <li>Live demo: MCTS beats deterministic minimax 70 %</li>
-          <li>Audience feedback 4.8 / 5 (60 students)</li>
-        </ul>
+            <div class="project-links">
+              <a href="https://drive.google.com/drive/folders/1qq217b-Lk9HlNgN5cdYeKdXrNqj-ARSc" target="_blank" class="project-link">View Presentation</a>
       </div>
+            <div class="project-tech">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">Game AI</span>
+              <span class="tech-tag">MCTS</span>
+              <span class="tech-tag">Research</span>
     </div>
   </div>
   
-  <!-- ───────────── Spotify Song Data Analysis ───────────── -->
-  <div class="project">
-    <div class="project-title">Spotify Song Data Analysis</div>
-  
-    <div class="project-content">
-      <div class="divider"></div>
-  
-      <div class="project-details">
-        <div class="project-date">Nov 2020 – Dec 2020</div>
-        <div class="project-desc">
-          Analyzed Spotify metadata using R &amp; spotifyr to identify popularity factors.
-          (<a href="https://github.com/joon628/DataScience_Spotify_Analysis" target="_blank">Repo</a>)
+          <div class="project-card">
+            <div class="project-header">
+              <h3 class="project-title">Spotify Song Data Analysis</h3>
+              <div class="project-date">Nov 2020 – Dec 2020</div>
         </div>
+            <div class="project-description">
+              Machine learning analysis of 33K+ tracks using Spotify's audio features. Built predictive models for song popularity with interactive Shiny dashboard for A&R team insights.
       </div>
-  
-      <button class="show-more-btn" aria-haspopup="dialog">Show&nbsp;more</button>
-  
-      <div class="popup">
-        <strong>Highlights</strong>
-        <ul>
-          <li>Scraped 33 k tracks; engineered 12 audio features</li>
-          <li>Random‑forest model → R² = 0.71 on popularity</li>
-          <li>Interactive Shiny dashboard for A&amp;R teams</li>
-        </ul>
+            <div class="project-links">
+              <a href="https://github.com/joon628/DataScience_Spotify_Analysis" target="_blank" class="project-link">GitHub Repository</a>
       </div>
+            <div class="project-tech">
+              <span class="tech-tag">R</span>
+              <span class="tech-tag">Spotify API</span>
+              <span class="tech-tag">Machine Learning</span>
+              <span class="tech-tag">Shiny</span>
     </div>
   </div>
   
-  <!-- ───────────── Quantitative Fall Detection Analysis ───────────── -->
-  <div class="project">
-    <div class="project-title">Quantitative Fall Detection Analysis</div>
-  
-    <div class="project-content">
-      <div class="divider"></div>
-  
-      <div class="project-details">
-        <div class="project-date">Dec 2020</div>
-        <div class="project-desc">
-          Developed fall‑detection algorithm via accelerometer FFT.
-          (<a href="https://github.com/joon628/Quantitative_Fall_Detection_Analysis" target="_blank">Repo</a>)
+          <div class="project-card">
+            <div class="project-header">
+              <h3 class="project-title">Fall Detection Algorithm</h3>
+              <div class="project-date">Dec 2020</div>
         </div>
+            <div class="project-description">
+              Real-time fall detection system using accelerometer data and FFT analysis. Achieved 95% sensitivity with 1% false-positive rate, deployed on ESP32 microcontroller.
       </div>
-  
-      <button class="show-more-btn" aria-haspopup="dialog">Show&nbsp;more</button>
-  
-      <div class="popup">
-        <strong>Highlights</strong>
-        <ul>
-          <li>95 % sensitivity at 1 % false‑positive rate</li>
-          <li>Deployed on ESP32 with 1 s real‑time latency</li>
-        </ul>
+            <div class="project-links">
+              <a href="https://github.com/joon628/Quantitative_Fall_Detection_Analysis" target="_blank" class="project-link">GitHub Repository</a>
       </div>
+            <div class="project-tech">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">ESP32</span>
+              <span class="tech-tag">Signal Processing</span>
+              <span class="tech-tag">IoT</span>
     </div>
   </div>
   
-  <!-- ───────────── Passive Solar House Quantitative Analysis ───────────── -->
-  <div class="project">
-    <div class="project-title">Passive Solar House Quantitative Analysis</div>
-  
-    <div class="project-content">
-      <div class="divider"></div>
-  
-      <div class="project-details">
-        <div class="project-date">Oct 2020</div>
-        <div class="project-desc">
-          Modeled passive‑solar house in MATLAB to optimize insulation.
-          (<a href="https://github.com/joon628/QEA_Bridge_of_Doom" target="_blank">Repo</a>)
+          <div class="project-card">
+            <div class="project-header">
+              <h3 class="project-title">Passive Solar House Analysis</h3>
+              <div class="project-date">Oct 2020</div>
+            </div>
+            <div class="project-description">
+              MATLAB-based thermal modeling system for optimizing house insulation efficiency. Implemented finite-difference heat transfer models with hourly temperature analysis.
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/joon628/QEA_Bridge_of_Doom" target="_blank" class="project-link">GitHub Repository</a>
+            </div>
+            <div class="project-tech">
+              <span class="tech-tag">MATLAB</span>
+              <span class="tech-tag">Thermal Modeling</span>
+              <span class="tech-tag">Energy Analysis</span>
         </div>
       </div>
   
-      <button class="show-more-btn" aria-haspopup="dialog">Show&nbsp;more</button>
-  
-      <div class="popup">
-        <strong>Highlights</strong>
-        <ul>
-          <li>Finite‑difference heat‑transfer model (hourly)</li>
-          <li>Suggested R‑30 walls vs base R‑13 → 24 % energy cut</li>
-        </ul>
+          <div class="project-card">
+            <div class="project-header">
+              <h3 class="project-title">Robot Path Planning with LIDAR</h3>
+              <div class="project-date">May 2020</div>
       </div>
+            <div class="project-description">
+              Autonomous navigation system using RANSAC and linear regression for obstacle detection. Optimized path planning algorithms achieving sub-50ms response times.
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/joon628/Quantitative_Engineering_Analysis_Robot_Simulation" target="_blank" class="project-link">GitHub Repository</a>
+            </div>
+            <div class="project-tech">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">LIDAR</span>
+              <span class="tech-tag">Robotics</span>
+              <span class="tech-tag">Computer Vision</span>
     </div>
   </div>
   
-  <!-- ───────────── Robot Path Programming using LIDAR Data ───────────── -->
-  <div class="project">
-    <div class="project-title">Robot Path Programming using LIDAR Data</div>
-  
-    <div class="project-content">
-      <div class="divider"></div>
-  
-      <div class="project-details">
-        <div class="project-date">May 2020</div>
-        <div class="project-desc">
-          Obstacle navigation via RANSAC &amp; linear regression on LIDAR data.
-          (<a href="https://github.com/joon628/Quantitative_Engineering_Analysis_Robot_Simulation"
-              target="_blank">Repo</a>)
         </div>
       </div>
-  
-      <button class="show-more-btn" aria-haspopup="dialog">Show&nbsp;more</button>
-  
-      <div class="popup">
-        <strong>Highlights</strong>
-        <ul>
-          <li>Path planning time&nbsp;≤&nbsp;50 ms on Raspberry Pi 4</li>
-          <li>Reduced collision risk by 83 % in simulation</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  
-  <!-- ───────────── Subsidiary Stock Management System ───────────── -->
-  <div class="project">
-    <div class="project-title">Subsidiary Stock Management System</div>
-  
-    <div class="project-content">
-      <div class="divider"></div>
-  
-      <div class="project-details">
-        <div class="project-date">Mar 2020 – Apr 2020</div>
-        <div class="project-desc">
-          PyQt5 desktop app for subsidiary stock calculations &amp; live DB updates.
-          (<a href="https://github.com/hyegibang/PurgoBiologicsStorageManagement" target="_blank">Repo</a>)
-        </div>
-      </div>
-  
-      <button class="show-more-btn" aria-haspopup="dialog">Show&nbsp;more</button>
-  
-      <div class="popup">
-        <strong>Highlights</strong>
-        <ul>
-          <li>Real‑time sync with PostgreSQL warehouse DB</li>
-          <li>Barcode scanner integration; 30 % reduction in entry errors</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  
-      
-        </div><!-- .section-content -->
-      </section>
+    </section>
       
     <section id="education">
       <div class="section-header"><span class="bar"></span><h2>Education</h2></div>
       <div class="section-content">
-        <div class="edu-logos">
-          <div class="edu-logo"><img src="logos/harvard.svg" alt="Harvard University Logo" /><div class="school-name">HARVARD UNIVERSITY</div><div class="degree-date">M.S. Computational Science & Engineering (2023–2024)</div></div>
-          <div class="edu-logo"><img src="logos/olin.svg" alt="Olin College Logo" /><div class="school-name">OLIN COLLEGE OF ENGINEERING</div><div class="degree-date">B.S. Engineering in Computers, Concentration in Entrepreneurship (2019–2023)</div></div>
+        <div class="education-grid">
+          <div class="education-card">
+            <div class="university-name">Harvard University</div>
+            <div class="degree-program">M.S. Computational Science & Engineering</div>
+            <div class="degree-years">2023–2026</div>
+      </div>
+          <div class="education-card">
+            <div class="university-name">Franklin W. Olin College of Engineering</div>
+            <div class="degree-program">B.S. Engineering in Computers, Concentration in Entrepreneurship</div>
+            <div class="degree-years">2019–2023</div>
+          </div>
         </div>
       </div>
     </section>
-    <section id="publications" class="list-section"><div class="section-header"><span class="bar"></span><h2>Publications</h2></div><div class="section-content"><ul><li>Solving Double Execution of Java’s paint() Method by Counting Down to the Heat Death of the Universe — SIGBOVIK, Apr 2022 (<a href="https://sigbovik.org/2022/proceedings.pdf">Proceedings</a>)</li></ul></div></section>
-    <section id="patents" class="list-section"><div class="section-header"><span class="bar"></span><h2>Patents</h2></div><div class="section-content"><ul><li>Product Inventory Management System and Means to Manage Stock by Using the System — KR 10‑2016‑0117022, Filed Mar 2016 (<a href="https://drive.google.com/file/d/0B5A-FH5Gp6NQem1uZV9lX2xiZ1ZubFV6dFZ1dTZXUE94OFlz">View</a>)</li></ul></div></section>
-    <section id="honors" class="list-section"><div class="section-header"><span class="bar"></span><h2>Honors & Awards</h2></div><div class="section-content"><ul><li>Colonel’s Excellency Award — US Army 2ID OSJA (Jan 2025)</li><li>Commandant’s List — Eighth Army Wightman NCO Academy (Nov 2024)</li><li>Seoul Metropolitan Council Award for Volunteer Service (Oct 2017)</li></ul></div></section>
-    <section id="contact"><div class="section-header"><span class="bar"></span><h2>Contact</h2></div><div class="section-content"><ul><li>Email: junseokkang@example.com</li><li>Phone: +82 10‑1234‑5678</li><li>Location: Seoul, South Korea</li></ul></div></section>
+    <section id="publications">
+      <div class="section-header"><span class="bar"></span><h2>Publications</h2></div>
+      <div class="section-content">
+        <div class="publications-grid">
+          <div class="publication-card academic">
+            <div class="publication-year">2022</div>
+            <div class="publication-title">Solving Double Execution of Java's paint() Method by Counting Down to the Heat Death of the Universe</div>
+            <div class="publication-authors">Braden Oh, Vedaant Kuchhal, <strong>Junseok Kang</strong> et al.</div>
+            <div class="publication-venue">SIGBOVIK, Apr. 3, 2022</div>
+            <button class="publication-btn" onclick="window.open('https://sigbovik.org/2022/proceedings.pdf', '_blank')">View Publication</button>
+          </div>
+          <div class="publication-card academic">
+            <div class="publication-year">2018</div>
+            <div class="publication-title">Study on the Resolution of Digital Image Using Computational and Mathematical Analysis</div>
+            <div class="publication-authors"><strong>Kang, Junseok</strong> and Richard Kyung</div>
+            <div class="publication-venue">American Mathematical Society, Nov. 3, 2018, 1142-68-245</div>
+            <button class="publication-btn" onclick="window.open('#', '_blank')">View Publication</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="patents">
+      <div class="section-header"><span class="bar"></span><h2>Patents</h2></div>
+      <div class="section-content">
+        <div class="patents-grid">
+          <div class="patent-card">
+            <div class="patent-title">Product Inventory Management System and Means to Manage Stock by Using the System</div>
+            <div class="patent-number">KR 10‑2016‑0117022</div>
+            <div class="patent-date">Filed March 2016</div>
+            <a href="https://drive.google.com/file/d/0B5A-FH5Gp6NQem1uZV9lX2xiZ1ZubFV6dFZ1dTZXUE94OFlz" target="_blank" class="patent-link">View Patent</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="honors">
+      <div class="section-header"><span class="bar"></span><h2>Honors & Awards</h2></div>
+      <div class="section-content">
+        <div class="honors-grid">
+          <div class="honor-card">
+            <div class="honor-icon">🏆</div>
+            <div class="honor-title">Commandant's List</div>
+            <div class="honor-desc">Top 10 percent of class at the Eighth Army Wightman NCO Academy</div>
+            <div class="honor-year">2024</div>
+          </div>
+          <div class="honor-card">
+            <div class="honor-icon">🎓</div>
+            <div class="honor-title">Olin College Tuition Scholarship</div>
+            <div class="honor-desc">Full tuition scholarship valued at $110,000</div>
+            <div class="honor-year">2019</div>
+          </div>
+          <div class="honor-card">
+            <div class="honor-icon">🤖</div>
+            <div class="honor-title">VEX Robotics Excellence Award & Tournament Champion</div>
+            <div class="honor-desc">VEX Robotics National Championship</div>
+            <div class="honor-year">2018</div>
+          </div>
+          <div class="honor-card">
+            <div class="honor-icon">🏅</div>
+            <div class="honor-title">Korea CORE/Seoul Metropolitan Council Award</div>
+            <div class="honor-desc">Recognition for translating text on independence martyrs in Korea to raise awareness</div>
+            <div class="honor-year">2017</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="service">
+      <div class="section-header"><span class="bar"></span><h2>Service & Leadership</h2></div>
+      <div class="section-content">
+        <div class="service-grid">
+          <div class="service-card">
+            <div class="service-header">
+              <h3 class="service-title">PowerChords A Capella</h3>
+              <div class="service-years">2019 – Current</div>
+            </div>
+            <div class="service-role">President</div>
+            <div class="service-description">
+              Led and served the only A Capella group in Olin College of Engineering. Performed multiple shows on and off campus. Participated in ICCAs as a team.
+    </div>
+  </div>
+  
+          <div class="service-card">
+            <div class="service-header">
+              <h3 class="service-title">VEX Robotics Team 6724B</h3>
+              <div class="service-years">2018 – 2019</div>
+            </div>
+            <div class="service-role">Lead Programmer</div>
+            <div class="service-description">
+              Led and programmed robot for team 6724B, based in Seoul, Korea. Ranked 1st Nationwide twice, with numerous awards in regionals and nationals.
+        </div>
+      </div>
+  
+          <div class="service-card">
+            <div class="service-header">
+              <h3 class="service-title">Nanu Lee Orphanage</h3>
+              <div class="service-years">2015 – 2019</div>
+      </div>
+            <div class="service-role">Cooking Volunteer, Co-Chef</div>
+            <div class="service-description">
+              Cooked and distributed food for 4 different orphanages every month, each with about 100-200 kids.
+    </div>
+  </div>
+  
+          <div class="service-card">
+            <div class="service-header">
+              <h3 class="service-title">Korea CORE Volunteer Team</h3>
+              <div class="service-years">2016 – 2017</div>
+            </div>
+            <div class="service-role">Translator</div>
+            <div class="service-description">
+              Translated for a book about Korea's unknown national heroes who participated in resistance from Japan in the 1930-40s.
+            </div>
+          </div>
+        </div>
+      </div>
+      </section>
+    <section id="affiliations">
+      <div class="section-header"><span class="bar"></span><h2>Professional Affiliations</h2></div>
+      <div class="section-content">
+        <div class="affiliations-grid">
+          <div class="affiliation-card">
+            <h3 class="affiliation-title">Translator</h3>
+            <div class="affiliation-org">United Nations</div>
+            <div class="affiliation-year">2019</div>
+            <div class="affiliation-description">
+              Translator for the 66th UN DPI NGO Conference in South Korea
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="languages">
+      <div class="section-header"><span class="bar"></span><h2>Languages</h2></div>
+      <div class="section-content">
+        <div class="languages-grid">
+          <div class="language-card">
+            <div class="language-name">Korean</div>
+            <div class="language-level">Native</div>
+            <div class="language-proficiency">
+              <div class="proficiency-bar proficiency-native"></div>
+            </div>
+          </div>
+          <div class="language-card">
+            <div class="language-name">English</div>
+            <div class="language-level">Native</div>
+            <div class="language-proficiency">
+              <div class="proficiency-bar proficiency-native"></div>
+            </div>
+          </div>
+          <div class="language-card">
+            <div class="language-name">Japanese</div>
+            <div class="language-level">Intermediate</div>
+            <div class="language-proficiency">
+              <div class="proficiency-bar proficiency-intermediate"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="contact">
+      <div class="section-header"><span class="bar"></span><h2>Contact</h2></div>
+      <div class="section-content">
+        <div class="contact-grid">
+          <div class="contact-card">
+            <div class="contact-icon">✉️</div>
+            <div class="contact-label">Email</div>
+            <div class="contact-value">jkang@g.harvard.edu</div>
+          </div>
+          <div class="contact-card">
+            <div class="contact-icon">📱</div>
+            <div class="contact-label">Phone</div>
+            <div class="contact-value">781-975-9059</div>
+          </div>
+          <div class="contact-card">
+            <div class="contact-icon">🌐</div>
+            <div class="contact-label">Website</div>
+            <div class="contact-value">portfolio.organictechs.com</div>
+          </div>
+          <div class="contact-card">
+            <div class="contact-icon">🔗</div>
+            <div class="contact-label">LinkedIn</div>
+            <div class="contact-value">Connect with me</div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
   <script>
-    document.addEventListener('click', e => {
-    /* open / close the popup */
-    if (e.target.matches('.show-more-btn')) {
-        const popup = e.target.nextElementSibling;          // popup follows the button
-        popup.classList.toggle('active');
-        e.stopPropagation();                                // don’t bubble to body
-    } else {                                              // clicked somewhere else
-        document.querySelectorAll('.popup.active').forEach(p => p.classList.remove('active'));
+    // ═══════════════════ ENHANCED TYPING ANIMATION ═══════════════════
+    const fullName = 'Junseok Joon Kang';
+    const typedEl = document.getElementById('typed');
+    let idx = 0;
+    const typingSpeed = 120;
+    const cursorSpeed = 530;
+    
+    function typeChar() {
+      if (idx < fullName.length) {
+        typedEl.textContent += fullName[idx++];
+        setTimeout(typeChar, typingSpeed + Math.random() * 50); // Add slight variation
+      } else {
+        setTimeout(transition, 800);
+      }
     }
+
+    // ═══════════════════ ENHANCED POPUP SYSTEM ═══════════════════
+    document.addEventListener('click', e => {
+    if (e.target.matches('.show-more-btn')) {
+        const popup = e.target.nextElementSibling;
+        const isActive = popup.classList.contains('active');
+        
+        // Close all other popups
+        document.querySelectorAll('.popup.active').forEach(p => {
+          p.classList.remove('active');
+        });
+        
+        // Toggle current popup
+        if (!isActive) {
+          popup.classList.add('active');
+        }
+        
+        e.stopPropagation();
+      } else {
+        // Close all popups when clicking elsewhere
+        document.querySelectorAll('.popup.active').forEach(p => {
+          p.classList.remove('active');
+        });
+      }
     });
 
-    /* optional: close on Esc key */
+    // Close popups on Escape key
     document.addEventListener('keyup', e => {
-    if (e.key === 'Escape')
-        document.querySelectorAll('.popup.active').forEach(p => p.classList.remove('active'));
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.popup.active').forEach(p => {
+          p.classList.remove('active');
+        });
+      }
     });
 
+    // ═══════════════════ ENHANCED EXPAND/COLLAPSE ═══════════════════
     function showFull() {
       const entries = document.querySelectorAll('.timeline .entry');
       const trigger = document.querySelector('.expand-trigger');
-      const expanded = trigger.textContent === 'Expand';
-      entries.forEach((el, i) => el.style.display = (!expanded && i >= 5) ? 'none' : 'flex');
-      trigger.textContent = expanded ? 'Collapse' : 'Expand';
+      const isCurrentlyExpanded = trigger.textContent.trim() === 'Show Less';
+      
+      entries.forEach((el, i) => {
+        if (!isCurrentlyExpanded && i >= 3) { // If currently collapsed, show more entries
+          el.style.display = 'flex';
+          setTimeout(() => {
+            el.style.opacity = '1';
+          }, (i - 3) * 100); // Stagger animation for newly shown entries
+        } else if (isCurrentlyExpanded && i >= 3) { // If currently expanded, hide extra entries
+          el.style.opacity = '0';
+          setTimeout(() => {
+            el.style.display = 'none';
+          }, 200);
+        }
+      });
+      
+      // Update button text
+      trigger.textContent = isCurrentlyExpanded ? 'Show More' : 'Show Less';
+      trigger.setAttribute('aria-expanded', !isCurrentlyExpanded);
     }
-    document.addEventListener('DOMContentLoaded', () => showFull());
 
-    
+    // ═══════════════════ SMOOTH TRANSITION ANIMATION ═══════════════════
+    function transition() {
+      const introNameEl = document.querySelector('.intro-name');
+      const headerNameEl = document.querySelector('header .name');
+      const introEl = document.getElementById('intro');
+      
+      if (!introNameEl || !headerNameEl || !introEl) return;
+      
+      // First, make header name invisible but take up space for measurement
+      headerNameEl.style.opacity = '0';
+      headerNameEl.style.visibility = 'visible';
+      
+      // Force layout calculation
+      setTimeout(() => {
+        // Get positions after layout
+        const introRect = introNameEl.getBoundingClientRect();
+        const headerRect = headerNameEl.getBoundingClientRect();
+        
+        // Hide header name again during transition
+        headerNameEl.style.visibility = 'hidden';
+        headerNameEl.style.opacity = '0';
+        
+        // Calculate exact movement needed
+        const deltaX = headerRect.left - introRect.left;
+        const deltaY = headerRect.top - introRect.top;
+        const scaleX = headerRect.width / introRect.width;
+        const scaleY = headerRect.height / introRect.height;
+        
+        // Apply initial position
+        introNameEl.style.position = 'fixed';
+        introNameEl.style.top = introRect.top + 'px';
+        introNameEl.style.left = introRect.left + 'px';
+        introNameEl.style.transformOrigin = 'left top';
+        introNameEl.style.zIndex = '1001';
+        
+        // Start the transition
+        requestAnimationFrame(() => {
+          introNameEl.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`;
+          introNameEl.style.transition = 'transform 1.6s cubic-bezier(0.25, 0.1, 0.25, 1)';
+        });
+        
+        // Reveal header name after transition completes
+        setTimeout(() => {
+          headerNameEl.style.visibility = 'visible';
+          headerNameEl.style.opacity = '1';
+          
+          // Start fading out intro
+          introEl.style.transition = 'opacity 0.8s ease-out, backdrop-filter 0.8s ease-out';
+          introEl.style.opacity = '0';
+          introEl.style.backdropFilter = 'blur(20px)';
+          
+          // Remove intro completely
+          setTimeout(() => {
+            introEl.remove();
+            
+            // Trigger section animations
+            document.querySelectorAll('section').forEach((section, i) => {
+              section.style.animationDelay = `${i * 0.1}s`;
+              section.classList.add('fade-in');
+            });
+          }, 800);
+        }, 1600);
+      }, 50); // Small delay to ensure layout calculation
+    }
+
+    // ═══════════════════ SCROLL ANIMATIONS ═══════════════════
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    // ═══════════════════ MOBILE NAVIGATION ═══════════════════
+    function toggleMobileNav() {
+      const nav = document.getElementById('side-nav');
+      nav.classList.toggle('mobile-open');
+    }
+
+    // ═══════════════════ KEYBOARD NAVIGATION ═══════════════════
+    document.addEventListener('keydown', e => {
+      // Alt + number for quick navigation
+      if (e.altKey && e.key >= '1' && e.key <= '9') {
+        e.preventDefault();
+        const links = document.querySelectorAll('#side-nav a');
+        const index = parseInt(e.key) - 1;
+        if (links[index]) {
+          links[index].click();
+        }
+      }
+    });
+
+    // ═══════════════════ SMOOTH SCROLLING ═══════════════════
+    document.querySelectorAll('#side-nav a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // ═══════════════════ PERFORMANCE OPTIMIZATIONS ═══════════════════
+    // Lazy load images
+    const imageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.src = img.dataset.src;
+          img.classList.remove('loading');
+          imageObserver.unobserve(img);
+        }
+      });
+    });
+
+    // ═══════════════════ INITIALIZATION ═══════════════════
+    document.addEventListener('DOMContentLoaded', () => {
+      // Start typing animation
+      typeChar();
+      
+      // Initialize expand/collapse - start collapsed
+      const entries = document.querySelectorAll('.timeline .entry');
+      const trigger = document.querySelector('.expand-trigger');
+      
+      // Initially hide entries beyond first 3
+      entries.forEach((el, i) => {
+        if (i >= 3) {
+          el.style.display = 'none';
+          el.style.opacity = '0';
+        }
+      });
+      
+      // Set initial button text - should say "Show More" when collapsed
+      if (trigger) {
+        trigger.textContent = 'Show More';
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+      
+      // Setup intersection observers
+      document.querySelectorAll('section').forEach(section => {
+        observer.observe(section);
+      });
+      
+      // Setup lazy loading for images
+      document.querySelectorAll('img[data-src]').forEach(img => {
+        img.classList.add('loading');
+        imageObserver.observe(img);
+      });
+      
+      // Add loading states
+      document.body.classList.add('loaded');
+    });
+
+    // ═══════════════════ ERROR HANDLING ═══════════════════
+    window.addEventListener('error', (e) => {
+      console.error('Portfolio error:', e.error);
+      // Graceful degradation - ensure basic functionality works
+    });
   </script>
 </body>
 </html>
