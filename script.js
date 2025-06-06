@@ -1,22 +1,51 @@
-// ═══════════════════ ENHANCED TYPING ANIMATION ═══════════════════
-const fullName = 'Junseok Joon Kang';
-const typedEl = document.getElementById('typed');
-let idx = 0;
-const typingSpeed = 120;
-const cursorSpeed = 530;
+// ═══════════════════ SPLIT-SCREEN INTRO ANIMATION ═══════════════════
+let currentIndex = 0;
+const animationDelay = 1200; // Pause between each movement
 
-function typeChar() {
-  if (idx < fullName.length) {
-    typedEl.textContent += fullName[idx++];
-    setTimeout(typeChar, typingSpeed + Math.random() * 50); // Add slight variation
-  } else {
-    setTimeout(transition, 800);
+function moveStackUp() {
+  const textItems = document.querySelectorAll('.text-item');
+  const textStack = document.querySelector('.text-stack');
+  
+  if (currentIndex < textItems.length - 1) {
+    // Remove active class from current item
+    textItems[currentIndex].classList.remove('active');
+    textItems[currentIndex].classList.add('exited');
+    
+    // Move to next item
+    currentIndex++;
+    
+    // Add active class to new current item
+    textItems[currentIndex].classList.add('active');
+    
+    // Calculate exact spacing based on actual rendered dimensions
+    const computedStyle = getComputedStyle(textStack);
+    const gap = parseFloat(computedStyle.gap);
+    const itemHeight = textItems[0].getBoundingClientRect().height;
+    
+    // Use the actual spacing (gap + item height) for perfect alignment
+    const actualSpacing = gap + itemHeight;
+    const moveDistance = currentIndex * -actualSpacing;
+    
+    textStack.style.transform = `translateY(${moveDistance}px)`;
+    
+    // Continue animation if not at "Joon Kang"
+    if (currentIndex < textItems.length - 1) {
+      setTimeout(moveStackUp, animationDelay);
+    } else {
+      // Animation complete, transition to main page
+      setTimeout(transition, 800);
+    }
   }
+}
+
+function startIntroAnimation() {
+  // Start the animation after initial delay
+  setTimeout(moveStackUp, 1500);
 }
 
 // ═══════════════════ ENHANCED POPUP SYSTEM ═══════════════════
 document.addEventListener('click', e => {
-if (e.target.matches('.show-more-btn')) {
+  if (e.target.matches('.show-more-btn')) {
     const popup = e.target.nextElementSibling;
     const isActive = popup.classList.contains('active');
     
@@ -75,67 +104,29 @@ function showFull() {
 
 // ═══════════════════ SMOOTH TRANSITION ANIMATION ═══════════════════
 function transition() {
-  const introNameEl = document.querySelector('.intro-name');
   const headerNameEl = document.querySelector('header .name');
   const introEl = document.getElementById('intro');
   
-  if (!introNameEl || !headerNameEl || !introEl) return;
+  if (!headerNameEl || !introEl) return;
   
-  // First, make header name invisible but take up space for measurement
-  headerNameEl.style.opacity = '0';
+  // Make header name visible
   headerNameEl.style.visibility = 'visible';
+  headerNameEl.style.opacity = '1';
   
-  // Force layout calculation
+  // Start fading out intro
+  introEl.style.transition = 'opacity 0.8s ease-out';
+  introEl.style.opacity = '0';
+  
+  // Remove intro completely
   setTimeout(() => {
-    // Get positions after layout
-    const introRect = introNameEl.getBoundingClientRect();
-    const headerRect = headerNameEl.getBoundingClientRect();
+    introEl.remove();
     
-    // Hide header name again during transition
-    headerNameEl.style.visibility = 'hidden';
-    headerNameEl.style.opacity = '0';
-    
-    // Calculate exact movement needed
-    const deltaX = headerRect.left - introRect.left;
-    const deltaY = headerRect.top - introRect.top;
-    const scaleX = headerRect.width / introRect.width;
-    const scaleY = headerRect.height / introRect.height;
-    
-    // Apply initial position
-    introNameEl.style.position = 'fixed';
-    introNameEl.style.top = introRect.top + 'px';
-    introNameEl.style.left = introRect.left + 'px';
-    introNameEl.style.transformOrigin = 'left top';
-    introNameEl.style.zIndex = '1001';
-    
-    // Start the transition
-    requestAnimationFrame(() => {
-      introNameEl.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`;
-      introNameEl.style.transition = 'transform 1.6s cubic-bezier(0.25, 0.1, 0.25, 1)';
+    // Trigger section animations
+    document.querySelectorAll('section').forEach((section, i) => {
+      section.style.animationDelay = `${i * 0.1}s`;
+      section.classList.add('fade-in');
     });
-    
-    // Reveal header name after transition completes
-    setTimeout(() => {
-      headerNameEl.style.visibility = 'visible';
-      headerNameEl.style.opacity = '1';
-      
-      // Start fading out intro
-      introEl.style.transition = 'opacity 0.8s ease-out, backdrop-filter 0.8s ease-out';
-      introEl.style.opacity = '0';
-      introEl.style.backdropFilter = 'blur(20px)';
-      
-      // Remove intro completely
-      setTimeout(() => {
-        introEl.remove();
-        
-        // Trigger section animations
-        document.querySelectorAll('section').forEach((section, i) => {
-          section.style.animationDelay = `${i * 0.1}s`;
-          section.classList.add('fade-in');
-        });
-      }, 800);
-    }, 1600);
-  }, 50); // Small delay to ensure layout calculation
+  }, 800);
 }
 
 // ═══════════════════ SCROLL ANIMATIONS ═══════════════════
@@ -201,8 +192,8 @@ const imageObserver = new IntersectionObserver((entries) => {
 
 // ═══════════════════ INITIALIZATION ═══════════════════
 document.addEventListener('DOMContentLoaded', () => {
-  // Start typing animation
-  typeChar();
+  // Start split-screen intro animation
+  startIntroAnimation();
   
   // Initialize expand/collapse - start collapsed
   const entries = document.querySelectorAll('.timeline .entry');

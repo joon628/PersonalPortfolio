@@ -41,53 +41,83 @@
       --radius-full: 999px;
     }
 
-    /* ═══════════════════ INTRO ANIMATION ═══════════════════ */
+    /* ═══════════════════ INTRO ANIMATION - SPLIT SCREEN ═══════════════════ */
     #intro { 
       position: fixed; 
       top: 0; 
       left: 0; 
       width: 100%; 
       height: 100%; 
-      background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-alt) 100%); 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
+      display: flex;
       z-index: 1000;
-      backdrop-filter: blur(0px);
-      transition: backdrop-filter var(--transition-slow);
     }
     
-    .intro-name { 
-      font-size: var(--font-2xl); 
-      font-weight: 200; 
-      color: var(--color-primary); 
-      white-space: nowrap;
+    .intro-left {
+      width: 35%;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: var(--spacing-3xl);
+    }
+    
+    .intro-right {
+      width: 65%;
+      background: var(--color-bg);
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      position: relative;
+    }
+    
+    .intro-im {
+      font-size: var(--font-2xl);
+      font-weight: 200;
+      color: var(--color-primary);
       letter-spacing: -0.02em;
       opacity: 0;
-      transform: translateY(20px);
-      animation: introFadeIn 0.8s ease-out 0.2s forwards;
+      transform: translateX(20px);
+      animation: imFadeIn 0.8s ease-out 0.5s forwards;
     }
     
-    @keyframes introFadeIn {
+    @keyframes imFadeIn {
       to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateX(0);
       }
     }
     
-    .cursor {
-      display: inline-block;
-      width: 3px;
-      height: 1em;
-      background: var(--color-primary);
-      vertical-align: baseline;
-      animation: blink 1s steps(1) infinite;
-      margin-left: 3px;
-      border-radius: 1px;
+    .text-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 80px;
+      transform: translateY(0);
+      transition: transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+      position: absolute;
+      top: calc(50% - var(--font-2xl) / 2 - 20px);
+      left: var(--spacing-3xl);
     }
     
-    @keyframes blink { 
-      50% { opacity: 0; } 
+    .text-item {
+      font-size: var(--font-2xl);
+      font-weight: 200;
+      letter-spacing: -0.02em;
+      color: var(--color-light);
+      opacity: 0.4;
+      transform: translateX(-20px);
+      transition: all 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+    
+    .text-item.active {
+      color: var(--color-primary);
+      opacity: 1;
+      transform: translateX(0);
+    }
+    
+    .text-item.exited {
+      opacity: 0.2;
+      transform: translateX(-40px);
     }
 
     /* Hide header name until after intro */
@@ -299,6 +329,37 @@
       letter-spacing: -0.02em;
       color: var(--color-primary);
       line-height: 1.1;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+      height: 1.2em; /* Fixed height to prevent layout shift */
+    }
+    
+    .name-primary {
+      display: block;
+      transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+    
+    .name-secondary {
+      display: block;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      color: var(--color-light);
+      opacity: 0.6;
+      transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+      transform: translateY(0);
+    }
+    
+    .name:hover .name-primary {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    
+    .name:hover .name-secondary {
+      transform: translateY(-100%);
+      color: var(--color-primary);
+      opacity: 1;
     }
     
     .info { 
@@ -410,7 +471,7 @@
 
     .company { 
       flex: 0 0 220px; 
-      font-size: var(--font-lg); 
+      font-size: var(--font-xl); 
       font-weight: 300; 
       text-transform: uppercase; 
       color: var(--color-tertiary); 
@@ -1443,7 +1504,7 @@
     
     .research-title {
       font-size: var(--font-lg);
-      font-weight: 500;
+      font-weight: 300;
       color: var(--color-secondary);
       margin: 0;
       line-height: 1.3;
@@ -1503,7 +1564,7 @@
     
     .project-title {
       font-size: var(--font-lg);
-      font-weight: 500;
+      font-weight: 400;
       color: var(--color-secondary);
       line-height: 1.3;
       margin: 0;
@@ -1590,12 +1651,15 @@
     
     .university-name {
       font-size: var(--font-xl);
-      font-weight: 400;
+      font-weight: 300;
       color: var(--color-secondary);
       letter-spacing: 0.02em;
       line-height: 1.2;
       margin-bottom: var(--spacing-sm);
+      text-transform: uppercase;
       transition: none; /* Remove animations */
+      text-align: center;
+
     }
     
     .education-card:hover .university-name {
@@ -1608,6 +1672,7 @@
       font-weight: 300;
       line-height: 1.4;
       margin-bottom: var(--spacing-xs);
+      text-align: center;
     }
     
     .degree-years {
@@ -1616,6 +1681,7 @@
       font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.1em;
+      text-align: center;
     }
 
     /* ═══════════════════ PUBLICATIONS - NO ANIMATIONS ═══════════════════ */
@@ -1642,7 +1708,7 @@
     .publication-year {
       font-size: var(--font-xs);
       color: var(--color-light);
-      font-weight: 500;
+      font-weight: 400;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: var(--spacing-xs);
@@ -1943,3 +2009,4 @@
     /* ═══════════════════ PUBLICATIONS - ENSURE NO HOVER ANIMATIONS ═══════════════════ */
     .publication-card:hover {
       transform: none; /* Ensure no hover animation */
+    }
