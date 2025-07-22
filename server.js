@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3002;
 const DB_PATH = path.join(__dirname, 'portfolio.db');
 
 // Middleware
@@ -74,7 +74,7 @@ function initializeDatabase() {
     // Create default admin user if none exists
     db.get("SELECT COUNT(*) as count FROM users", (err, row) => {
         if (!err && row.count === 0) {
-            const defaultPassword = 'portfolio2024';
+            const defaultPassword = 'P@rtf0lioQFDVTR!';
             bcrypt.hash(defaultPassword, 10, (err, hash) => {
                 if (!err) {
                     db.run("INSERT INTO users (username, password_hash) VALUES (?, ?)", 
@@ -150,6 +150,61 @@ app.get('/api/auth/status', (req, res) => {
     } else {
         res.json({ authenticated: false });
     }
+});
+
+// Change password endpoint
+app.post('/api/auth/change-password', requireAuth, (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.session.userId;
+    
+    if (!currentPassword || !newPassword) {
+        return res.status(400).json({ error: 'Current password and new password are required' });
+    }
+    
+    if (newPassword.length < 8) {
+        return res.status(400).json({ error: 'New password must be at least 8 characters long' });
+    }
+    
+    // Get current user
+    db.get("SELECT * FROM users WHERE id = ?", [userId], (err, user) => {
+        if (err) {
+            return res.status(500).json({ error: 'Database error' });
+        }
+        
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        
+        // Verify current password
+        bcrypt.compare(currentPassword, user.password_hash, (err, match) => {
+            if (err) {
+                return res.status(500).json({ error: 'Authentication error' });
+            }
+            
+            if (!match) {
+                return res.status(401).json({ error: 'Current password is incorrect' });
+            }
+            
+            // Hash new password
+            bcrypt.hash(newPassword, 10, (err, newHash) => {
+                if (err) {
+                    return res.status(500).json({ error: 'Password hashing error' });
+                }
+                
+                // Update password in database
+                db.run("UPDATE users SET password_hash = ? WHERE id = ?", 
+                       [newHash, userId], (err) => {
+                    if (err) {
+                        console.error('Error updating password:', err);
+                        return res.status(500).json({ error: 'Failed to update password' });
+                    }
+                    
+                    console.log(`Password updated for user: ${user.username}`);
+                    res.json({ message: 'Password updated successfully' });
+                });
+            });
+        });
+    });
 });
 
 // Get all portfolio data

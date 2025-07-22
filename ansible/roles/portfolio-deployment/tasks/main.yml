@@ -1,0 +1,143 @@
+---
+- name: Check if required packages are installed
+  shell: |
+    command -v git >/dev/null 2>&1 && echo "git: OK" || echo "git: MISSING"
+    command -v rsync >/dev/null 2>&1 && echo "rsync: OK" || echo "rsync: MISSING"  
+    command -v sqlite3 >/dev/null 2>&1 && echo "sqlite3: OK" || echo "sqlite3: MISSING"
+  register: package_check
+
+- name: Display package status
+  debug:
+    msg: "{{ package_check.stdout }}"
+
+- name: Create application directory
+  file:
+    path: "{{ app_path }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0755'
+
+- name: Ensure data directory permissions (Docker will create if needed)
+  file:
+    path: "{{ app_path }}/data"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0755'
+  ignore_errors: yes
+
+- name: Copy application files
+  synchronize:
+    src: "{{ playbook_dir }}/../"
+    dest: "{{ app_path }}/"
+    delete: yes
+    rsync_opts:
+      - "--exclude=.git"
+      - "--exclude=node_modules"  
+      - "--exclude=.deployment_lock"
+      - "--exclude=backups"
+      - "--exclude=ansible"
+      - "--exclude=*.log"
+      - "--exclude=.env*"
+
+- name: Set ownership of application files
+  file:
+    path: "{{ app_path }}"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    recurse: yes
+
+- name: Create production environment file
+  template:
+    src: production.env.j2
+    dest: "{{ app_path }}/.env"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0600'
+
+- name: Create docker-compose override for production
+  template:
+    src: docker-compose.prod.yml.j2
+    dest: "{{ app_path }}/docker-compose.prod.yml"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0644'
+
+- name: Check if database exists
+  stat:
+    path: "{{ app_path }}/{{ database_name }}"
+  register: db_exists
+
+- name: Backup existing database if it exists
+  copy:
+    src: "{{ app_path }}/{{ database_name }}"
+    dest: "{{ app_path }}/{{ database_name }}.backup.{{ ansible_date_time.epoch }}"
+    remote_src: yes
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+  when: db_exists.stat.exists
+
+- name: Stop existing application container (if running)
+  shell: docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+  args:
+    chdir: "{{ app_path }}"
+  ignore_errors: yes
+
+- name: Build and start application with docker compose
+  shell: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+  args:
+    chdir: "{{ app_path }}"
+  register: docker_result
+
+- name: Wait for application to be ready
+  uri:
+    url: "{{ health_check_url }}"
+    method: GET
+    timeout: 10
+  register: health_check
+  until: health_check.status == 200
+  retries: "{{ health_check_retries }}"
+  delay: "{{ health_check_delay }}"
+
+- name: Generate nginx configuration for manual setup
+  template:
+    src: nginx.conf.j2
+    dest: "{{ app_path }}/nginx.conf"
+    mode: '0644'
+
+- name: Display nginx configuration location
+  debug:
+    msg: |
+      Nginx configuration has been generated at: {{ app_path }}/nginx.conf
+      To update nginx manually, run:
+      sudo cp {{ app_path }}/nginx.conf /etc/nginx/sites-available/{{ app_domain }}
+      sudo ln -sf /etc/nginx/sites-available/{{ app_domain }} /etc/nginx/sites-enabled/{{ app_domain }}
+      sudo nginx -t && sudo systemctl reload nginx
+
+- name: Check if nginx configuration exists
+  stat:
+    path: "/etc/nginx/sites-available/{{ app_domain }}"
+  register: nginx_config_exists
+
+- name: Verify application is accessible via nginx
+  uri:
+    url: "https://{{ app_domain }}"
+    method: GET
+    timeout: 30
+    validate_certs: no
+  register: app_status
+  ignore_errors: yes
+
+- name: Display deployment status
+  debug:
+    msg: |
+      Deployment Status:
+      - Application: {{ app_name }}
+      - Domain: {{ app_domain }}
+      - Path: {{ app_path }}
+      - Port: {{ app_port }}
+      - Docker Build: {{ 'Success' if docker_result.rc == 0 else 'Failed' }}
+      - Health Check: {{ 'Pass' if health_check.status == 200 else 'Fail' }}
+      - Nginx Config: Generated at {{ app_path }}/nginx.conf
+      - App Status: {{ 'Running' if app_status.status == 200 else 'Check logs' }}

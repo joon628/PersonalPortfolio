@@ -1,0 +1,35 @@
+---
+all:
+  children:
+    portfolio_servers:
+      hosts:
+        portfolio_production:
+          ansible_host: joonkangserver.ddns.net
+          ansible_port: 2222
+          ansible_user: joon628
+          ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+          
+          # Application Configuration
+          app_name: portfolio
+          app_domain: portfolio.organictechs.com
+          app_port: 3002
+          app_path: /home/joon628/websites/portfolio.organictechs.com
+          
+          # SSL Configuration  
+          ssl_email: junseok628@gmail.com
+          ssl_domains:
+            - portfolio.organictechs.com
+          
+          # Environment Variables
+          app_env: production
+          
+          # Database Configuration
+          db_backup_enabled: true
+          db_backup_retention_days: 30
+          database_name: portfolio.db
+          
+          # Deployment Configuration
+          deploy_strategy: rolling
+          health_check_url: "http://localhost:3002/api/portfolio/public"
+          health_check_retries: 5
+          health_check_delay: 10

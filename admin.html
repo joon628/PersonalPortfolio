@@ -36,6 +36,7 @@
             <div class="header-actions">
                 <button id="refreshData" class="btn btn-primary">Refresh Data</button>
                 <button id="saveAll" class="btn btn-success">Save All Changes</button>
+                <button id="changePassword" class="btn btn-warning">Change Password</button>
                 <button id="logout" class="btn btn-secondary">Logout</button>
             </div>
         </header>
@@ -220,6 +221,44 @@
                     </div>
                 </section>
             </main>
+        </div>
+    </div>
+
+    <!-- Password Change Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Change Password</h2>
+                <span class="close" id="passwordModalClose">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="passwordChangeForm">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" class="form-control" required minlength="8">
+                        <small class="form-text">Password must be at least 8 characters long</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" class="form-control" required minlength="8">
+                    </div>
+                    <div class="password-strength">
+                        <div class="strength-meter">
+                            <div class="strength-bar" id="strengthBar"></div>
+                        </div>
+                        <div class="strength-text" id="strengthText">Enter a password</div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelPasswordChange">Cancel</button>
+                        <button type="submit" class="btn btn-success">Update Password</button>
+                    </div>
+                    <div id="passwordError" class="error-message"></div>
+                </form>
+            </div>
         </div>
     </div>
 

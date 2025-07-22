@@ -73,11 +73,28 @@ function setupEventListeners() {
     // Logout button
     document.getElementById('logout').addEventListener('click', handleLogout);
     
+    // Change password button
+    document.getElementById('changePassword').addEventListener('click', showPasswordModal);
+    
     // Save all button
     document.getElementById('saveAll').addEventListener('click', saveAllChanges);
     
     // Refresh data button
     document.getElementById('refreshData').addEventListener('click', handleRefreshData);
+    
+    // Password modal handlers
+    document.getElementById('passwordModalClose').addEventListener('click', hidePasswordModal);
+    document.getElementById('cancelPasswordChange').addEventListener('click', hidePasswordModal);
+    document.getElementById('passwordChangeForm').addEventListener('submit', handlePasswordChange);
+    document.getElementById('newPassword').addEventListener('input', updatePasswordStrength);
+    document.getElementById('confirmPassword').addEventListener('input', validatePasswordMatch);
+    
+    // Close modal when clicking outside
+    document.getElementById('passwordModal').addEventListener('click', (e) => {
+        if (e.target.id === 'passwordModal') {
+            hidePasswordModal();
+        }
+    });
     
     // Navigation
     document.querySelectorAll('.nav-link').forEach(link => {
@@ -1516,5 +1533,157 @@ function copyToClipboard(text) {
         }
         
         document.body.removeChild(textArea);
+    }
+}
+
+// Password Change Functions
+function showPasswordModal() {
+    document.getElementById('passwordModal').style.display = 'block';
+    document.getElementById('currentPassword').focus();
+    clearPasswordForm();
+}
+
+function hidePasswordModal() {
+    document.getElementById('passwordModal').style.display = 'none';
+    clearPasswordForm();
+}
+
+function clearPasswordForm() {
+    document.getElementById('passwordChangeForm').reset();
+    document.getElementById('passwordError').textContent = '';
+    resetPasswordStrength();
+}
+
+function updatePasswordStrength() {
+    const password = document.getElementById('newPassword').value;
+    const strengthBar = document.getElementById('strengthBar');
+    const strengthText = document.getElementById('strengthText');
+    
+    if (!password) {
+        resetPasswordStrength();
+        return;
+    }
+    
+    const strength = calculatePasswordStrength(password);
+    
+    // Remove all strength classes
+    strengthBar.className = 'strength-bar';
+    strengthText.className = 'strength-text';
+    
+    // Add appropriate strength class
+    strengthBar.classList.add(strength.class);
+    strengthText.classList.add(strength.class);
+    strengthText.textContent = strength.text;
+}
+
+function calculatePasswordStrength(password) {
+    let score = 0;
+    let feedback = [];
+    
+    // Length check
+    if (password.length >= 8) score += 1;
+    else feedback.push('at least 8 characters');
+    
+    // Character variety checks
+    if (/[a-z]/.test(password)) score += 1;
+    else feedback.push('lowercase letters');
+    
+    if (/[A-Z]/.test(password)) score += 1;
+    else feedback.push('uppercase letters');
+    
+    if (/[0-9]/.test(password)) score += 1;
+    else feedback.push('numbers');
+    
+    if (/[^A-Za-z0-9]/.test(password)) score += 1;
+    else feedback.push('special characters');
+    
+    // Determine strength level
+    if (score < 2) {
+        return { class: 'weak', text: 'Weak - Add ' + feedback.slice(0, 2).join(' and ') };
+    } else if (score < 3) {
+        return { class: 'fair', text: 'Fair - Add ' + feedback.slice(0, 1).join('') };
+    } else if (score < 4) {
+        return { class: 'good', text: 'Good password' };
+    } else {
+        return { class: 'strong', text: 'Strong password' };
+    }
+}
+
+function resetPasswordStrength() {
+    const strengthBar = document.getElementById('strengthBar');
+    const strengthText = document.getElementById('strengthText');
+    
+    strengthBar.className = 'strength-bar';
+    strengthText.className = 'strength-text';
+    strengthText.textContent = 'Enter a password';
+}
+
+function validatePasswordMatch() {
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const errorDiv = document.getElementById('passwordError');
+    
+    if (confirmPassword && newPassword !== confirmPassword) {
+        errorDiv.textContent = 'Passwords do not match';
+        return false;
+    } else {
+        errorDiv.textContent = '';
+        return true;
+    }
+}
+
+async function handlePasswordChange(e) {
+    e.preventDefault();
+    
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const errorDiv = document.getElementById('passwordError');
+    
+    // Validate form
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        errorDiv.textContent = 'All fields are required';
+        return;
+    }
+    
+    if (newPassword.length < 8) {
+        errorDiv.textContent = 'New password must be at least 8 characters long';
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        errorDiv.textContent = 'Passwords do not match';
+        return;
+    }
+    
+    if (newPassword === currentPassword) {
+        errorDiv.textContent = 'New password must be different from current password';
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/auth/change-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                currentPassword,
+                newPassword
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            hidePasswordModal();
+            showToast('Password updated successfully!', false);
+        } else {
+            errorDiv.textContent = data.error || 'Failed to update password';
+        }
+    } catch (error) {
+        console.error('Password change error:', error);
+        errorDiv.textContent = 'Network error. Please try again.';
     }
 }
