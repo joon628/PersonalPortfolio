@@ -88,7 +88,6 @@
             <div class="entry"><div class="company">Olin College</div><div class="details"><time>Jan 2021 – Jun 2021</time><div class="role">Software Design Teaching Assistant</div><p class="desc">Teaching assistant at Olin College of Engineering in Software Design (ENGR2510). Taught students basics of coding and logic, code management, version control and other basics of becoming a developer using Python as the main language.</p></div></div>
             <div class="entry"><div class="company">Purgo Biologics</div><div class="details"><time>Mar 2020 – Dec 2020</time><div class="role">Full Stack Developer</div><p class="desc">Created and deployed web application with full security measures based on Python flask, HTML, CSS, JS and ubuntu server management to assist salespeople with their current sales revenue compared to prior month and provided data on possible focus in certain customers for future reference. Provided categorization to company's customers in terms of potential sales quantity and level of potential purchase rates based on their data using machine learning and data analysis techniques in Python. Produced web application based on Python flask and ubuntu server management on subject of product subsidiary stock management and data visualization for product shipping and manufacturing.</p></div></div>
          </div>
-        <div class="expand-trigger" onclick="showFull()">Show More</div>
       </div>
     </section>
 
@@ -578,6 +577,14 @@
     </section>
   </main>
   
+  <script>
+    // Simple routing for /admin path
+    if (window.location.pathname === '/admin' || window.location.pathname.endsWith('/admin')) {
+      window.location.href = 'admin.html';
+    }
+  </script>
+  <script src="api-client.js"></script>
   <script src="script.js"></script>
+  <script src="data-loader.js"></script>
 </body>
 </html>

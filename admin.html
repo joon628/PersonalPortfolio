@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Admin - Junseok Kang</title>
+    <link rel="stylesheet" href="admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="api-client.js"></script>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="auth-container">
+        <div class="auth-box">
+            <h1>Portfolio Admin</h1>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" value="admin" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required autofocus>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+                <div id="loginError" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="dashboard hidden">
+        <!-- Header -->
+        <header class="admin-header">
+            <h1>Portfolio Admin Dashboard</h1>
+            <div class="header-actions">
+                <button id="refreshData" class="btn btn-primary">Refresh Data</button>
+                <button id="saveAll" class="btn btn-success">Save All Changes</button>
+                <button id="logout" class="btn btn-secondary">Logout</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="admin-container">
+            <!-- Sidebar -->
+            <aside class="admin-sidebar">
+                <nav>
+                    <ul id="sectionNav">
+                        <li><a href="#about" class="nav-link active">About</a></li>
+                        <li><a href="#experience" class="nav-link">Experience</a></li>
+                        <li><a href="#research" class="nav-link">Research</a></li>
+                        <li><a href="#skills" class="nav-link">Skills</a></li>
+                        <li><a href="#certifications" class="nav-link">Certifications</a></li>
+                        <li><a href="#projects" class="nav-link">Projects</a></li>
+                        <li><a href="#education" class="nav-link">Education</a></li>
+                        <li><a href="#publications" class="nav-link">Publications</a></li>
+                        <li><a href="#patents" class="nav-link">Patents</a></li>
+                        <li><a href="#honors" class="nav-link">Honors</a></li>
+                        <li><a href="#service" class="nav-link">Service</a></li>
+                        <li><a href="#affiliations" class="nav-link">Affiliations</a></li>
+                        <li><a href="#languages" class="nav-link">Languages</a></li>
+                        <li><a href="#contact" class="nav-link">Contact</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Content Editor -->
+            <main class="admin-content">
+                <!-- About Section -->
+                <section id="about-editor" class="editor-section">
+                    <h2>About</h2>
+                    <div class="form-group">
+                        <label for="aboutName">Name</label>
+                        <input type="text" id="aboutName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="aboutTitle">Title</label>
+                        <input type="text" id="aboutTitle" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="aboutDescription">Description</label>
+                        <textarea id="aboutDescription" class="form-control" rows="6"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="aboutKeywords">Keywords (comma-separated)</label>
+                        <input type="text" id="aboutKeywords" class="form-control" placeholder="e.g., Machine Learning, Cloud Computing">
+                    </div>
+                </section>
+
+                <!-- Experience Section -->
+                <section id="experience-editor" class="editor-section hidden">
+                    <h2>Experience</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="addExperience()">Add Experience</button>
+                    </div>
+                    <div id="experienceList" class="item-list"></div>
+                </section>
+
+                <!-- Research Section -->
+                <section id="research-editor" class="editor-section hidden">
+                    <h2>Research Interests</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="addResearch()">Add Research Area</button>
+                    </div>
+                    <div id="researchList" class="item-list"></div>
+                </section>
+
+                <!-- Skills Section -->
+                <section id="skills-editor" class="editor-section hidden">
+                    <h2>Skills</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="addSkillCategory()">Add Skill Category</button>
+                    </div>
+                    <div id="skillsList" class="item-list"></div>
+                </section>
+
+                <!-- Certifications Section -->
+                <section id="certifications-editor" class="editor-section hidden">
+                    <h2>Certifications</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="addCertification()">Add Certification</button>
+                    </div>
+                    <div id="certificationsList" class="item-list"></div>
+                </section>
+
+                <!-- Projects Section -->
+                <section id="projects-editor" class="editor-section hidden">
+                    <h2>Projects</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="addProject()">Add Project</button>
+                    </div>
+                    <div id="projectsList" class="item-list"></div>
+                </section>
+
+                <!-- Education Section -->
+                <section id="education-editor" class="editor-section hidden">
+                    <h2>Education</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="addEducation()">Add Education</button>
+                    </div>
+                    <div id="educationList" class="item-list"></div>
+                </section>
+
+                <!-- Publications Section -->
+                <section id="publications-editor" class="editor-section hidden">
+                    <h2>Publications</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="addPublication()">Add Publication</button>
+                    </div>
+                    <div id="publicationsList" class="item-list"></div>
+                </section>
+
+                <!-- Patents Section -->
+                <section id="patents-editor" class="editor-section hidden">
+                    <h2>Patents</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="addPatent()">Add Patent</button>
+                    </div>
+                    <div id="patentsList" class="item-list"></div>
+                </section>
+
+                <!-- Honors Section -->
+                <section id="honors-editor" class="editor-section hidden">
+                    <h2>Honors & Awards</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="addHonor()">Add Honor</button>
+                    </div>
+                    <div id="honorsList" class="item-list"></div>
+                </section>
+
+                <!-- Service Section -->
+                <section id="service-editor" class="editor-section hidden">
+                    <h2>Service</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="addService()">Add Service</button>
+                    </div>
+                    <div id="serviceList" class="item-list"></div>
+                </section>
+
+                <!-- Affiliations Section -->
+                <section id="affiliations-editor" class="editor-section hidden">
+                    <h2>Professional Affiliations</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="addAffiliation()">Add Affiliation</button>
+                    </div>
+                    <div id="affiliationsList" class="item-list"></div>
+                </section>
+
+                <!-- Languages Section -->
+                <section id="languages-editor" class="editor-section hidden">
+                    <h2>Languages</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="addLanguage()">Add Language</button>
+                    </div>
+                    <div id="languagesList" class="item-list"></div>
+                </section>
+
+                <!-- Contact Section -->
+                <section id="contact-editor" class="editor-section hidden">
+                    <h2>Contact</h2>
+                    <div class="form-group">
+                        <label for="contactEmail">Email</label>
+                        <input type="email" id="contactEmail" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactPhone">Phone</label>
+                        <input type="tel" id="contactPhone" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactLinkedIn">LinkedIn URL</label>
+                        <input type="url" id="contactLinkedIn" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactGitHub">GitHub URL</label>
+                        <input type="url" id="contactGitHub" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactLocation">Location</label>
+                        <input type="text" id="contactLocation" class="form-control">
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
