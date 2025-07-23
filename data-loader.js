@@ -1,5 +1,18 @@
 // Portfolio Data Loader - Loads content from SQLite API and updates the DOM
 
+// Helper function to format text with line breaks
+function formatDescription(text) {
+    if (!text) return '';
+    // Escape HTML entities and convert line breaks to <br>
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/\n/g, '<br>');
+}
+
 // Load portfolio data from API
 async function loadPortfolioData() {
     try {
@@ -44,7 +57,7 @@ function updateAboutSection(data) {
         
         const descEl = aboutSection.querySelector('p');
         if (descEl && data.about.description) {
-            descEl.textContent = data.about.description;
+            descEl.innerHTML = formatDescription(data.about.description);
         }
         
         // Update keywords/tags
@@ -81,7 +94,7 @@ function updateExperienceSection(data) {
             <div class="details">
                 <time>${exp.startDate || ''} – ${exp.endDate || 'Present'}</time>
                 <div class="role">${exp.title || ''}</div>
-                <p class="desc">${exp.description || ''}</p>
+                <p class="desc">${formatDescription(exp.description)}</p>
             </div>
         `;
         
@@ -115,7 +128,7 @@ function updateResearchSection(data) {
                 </div>
                 <div class="research-institution">${item.institution || ''}</div>
                 <div class="research-description">
-                    ${item.description || ''}
+                    ${formatDescription(item.description)}
                 </div>
             </div>
         `)
@@ -175,7 +188,7 @@ function updateProjectsSection(data) {
                     <div class="project-date">${project.date || ''}</div>
                 </div>
                 <div class="project-description">
-                    ${project.description || ''}
+                    ${formatDescription(project.description)}
                 </div>
                 ${project.link ? `
                 <div class="project-links">
@@ -262,7 +275,7 @@ function updateHonorsSection(data) {
                 <h3>${honor.title || ''}</h3>
                 <div class="issuer">${honor.issuer || ''}</div>
                 <div class="date">${honor.date || ''}</div>
-                ${honor.description ? `<p>${honor.description}</p>` : ''}
+                ${honor.description ? `<p>${formatDescription(honor.description)}</p>` : ''}
             </div>
         `)
         .join('');
@@ -272,16 +285,20 @@ function updateHonorsSection(data) {
 function updateServiceSection(data) {
     if (!data.service || data.service.length === 0) return;
     
-    const serviceList = document.querySelector('#service .service-list');
-    if (!serviceList) return;
+    const serviceGrid = document.querySelector('#service .service-grid');
+    if (!serviceGrid) return;
     
-    serviceList.innerHTML = data.service
+    serviceGrid.innerHTML = data.service
         .map(service => `
-            <div class="service-item">
-                <h3>${service.role || ''}</h3>
-                <div class="organization">${service.organization || ''}</div>
-                <div class="period">${service.period || ''}</div>
-                ${service.description ? `<p>${service.description}</p>` : ''}
+            <div class="service-card">
+                <div class="service-header">
+                    <h3 class="service-title">${service.organization || ''}</h3>
+                    <div class="service-years">${service.period || ''}</div>
+                </div>
+                <div class="service-role">${service.role || ''}</div>
+                <div class="service-description">
+                    ${formatDescription(service.description)}
+                </div>
             </div>
         `)
         .join('');

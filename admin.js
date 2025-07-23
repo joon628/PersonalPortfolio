@@ -241,6 +241,19 @@ function updateContact() {
     };
 }
 
+// Helper function to format text with line breaks
+function formatDescription(text) {
+    if (!text) return '';
+    // Escape HTML entities and convert line breaks to <br>
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/\n/g, '<br>');
+}
+
 // Section Rendering
 function renderCurrentSection() {
     const activeNav = document.querySelector('.nav-link.active');
@@ -334,7 +347,7 @@ function createExperienceCard(exp, index) {
         <p><strong>Company:</strong> ${exp.company || ''}</p>
         <p><strong>Period:</strong> ${exp.startDate || ''} - ${exp.endDate || 'Present'}</p>
         <p><strong>Location:</strong> ${exp.location || ''}</p>
-        <p><strong>Description:</strong> ${exp.description || ''}</p>
+        <p><strong>Description:</strong> ${formatDescription(exp.description)}</p>
     `;
     return card;
 }
@@ -453,7 +466,7 @@ function createResearchCard(item, index) {
         </div>
         <p><strong>Period:</strong> ${item.period || ''}</p>
         <p><strong>Institution:</strong> ${item.institution || ''}</p>
-        <p>${item.description || ''}</p>
+        <p>${formatDescription(item.description)}</p>
     `;
     return card;
 }
@@ -741,7 +754,7 @@ function createProjectCard(project, index) {
             </div>
         </div>
         <p><strong>Date:</strong> ${project.date || ''}</p>
-        <p>${project.description || ''}</p>
+        <p>${formatDescription(project.description)}</p>
         <p><strong>Technologies:</strong> ${project.technologies ? project.technologies.join(', ') : ''}</p>
         ${project.link ? `<p><strong>Link:</strong> <a href="${project.link}" target="_blank">${project.linkText || 'GitHub Repository'}</a></p>` : ''}
     `;
@@ -1194,7 +1207,7 @@ function createHonorCard(honor, index) {
         </div>
         <p><strong>Issuer:</strong> ${honor.issuer || ''}</p>
         <p><strong>Date:</strong> ${honor.date || ''}</p>
-        ${honor.description ? `<p>${honor.description}</p>` : ''}
+        ${honor.description ? `<p>${formatDescription(honor.description)}</p>` : ''}
     `;
     return card;
 }
@@ -1263,12 +1276,30 @@ function renderService() {
     portfolioData.service.forEach((service, index) => {
         container.appendChild(createServiceCard(service, index));
     });
+    
+    // Initialize sortable
+    if (typeof Sortable !== 'undefined') {
+        Sortable.create(container, {
+            handle: '.drag-handle',
+            animation: 150,
+            onEnd: function(evt) {
+                const oldIndex = evt.oldIndex;
+                const newIndex = evt.newIndex;
+                if (oldIndex !== newIndex) {
+                    const item = portfolioData.service.splice(oldIndex, 1)[0];
+                    portfolioData.service.splice(newIndex, 0, item);
+                    renderService();
+                }
+            }
+        });
+    }
 }
 
 function createServiceCard(service, index) {
     const card = document.createElement('div');
-    card.className = 'item-card';
+    card.className = 'item-card sortable-item';
     card.innerHTML = `
+        <div class="drag-handle">⋮⋮</div>
         <div class="item-header">
             <h3>${service.role || 'New Service'}</h3>
             <div class="item-actions">
@@ -1278,7 +1309,7 @@ function createServiceCard(service, index) {
         </div>
         <p><strong>Organization:</strong> ${service.organization || ''}</p>
         <p><strong>Period:</strong> ${service.period || ''}</p>
-        ${service.description ? `<p>${service.description}</p>` : ''}
+        ${service.description ? `<p>${formatDescription(service.description)}</p>` : ''}
     `;
     return card;
 }

@@ -40,6 +40,8 @@
       - "--exclude=ansible"
       - "--exclude=*.log"
       - "--exclude=.env*"
+      - "--exclude=portfolio.db"
+      - "--exclude=data/"
 
 - name: Set ownership of application files
   file:
@@ -47,6 +49,7 @@
     owner: "{{ app_user }}"
     group: "{{ app_group }}"
     recurse: yes
+  ignore_errors: yes
 
 - name: Create production environment file
   template:
