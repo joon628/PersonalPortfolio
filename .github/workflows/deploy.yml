@@ -10,8 +10,6 @@ env:
   SERVICE_NAME:    ${{ vars.SERVICE_NAME }}
   PROD_COMPOSE:    ${{ vars.PROD_COMPOSE_PATH || '/srv/prod/docker-compose.yml' }}
   HEALTHCHECK_URL: ${{ vars.HEALTHCHECK_URL }}
-  REGISTRY_USER:   ${{ secrets.REGISTRY_USER }}  # Store as secret
-  REGISTRY_PASS:   ${{ secrets.REGISTRY_PASS }}  # Store as secret
 
 concurrency:
   group: deploy-${{ github.ref_name }}-${{ vars.SERVICE_NAME }}
@@ -39,7 +37,7 @@ jobs:
 
       - name: Login to production registry
         run: |
-          echo "${{ env.REGISTRY_PASS }}" | docker login localhost:5000 -u "${{ env.REGISTRY_USER }}" --password-stdin
+          echo "${{ secrets.REGISTRY_PASS }}" | docker login localhost:5000 -u "${{ secrets.REGISTRY_USER }}" --password-stdin
 
       - name: Build and push image
         env:
