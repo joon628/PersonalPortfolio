@@ -1,0 +1,81 @@
+name: Build & Deploy Portfolio
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  APP_NAME:        ${{ vars.APP_NAME }}
+  IMAGE_REPO:      ${{ vars.IMAGE_REPO }}
+  SERVICE_NAME:    ${{ vars.SERVICE_NAME }}
+  PROD_CONTEXT:    ${{ vars.PROD_DOCKER_CONTEXT || 'prod' }}
+  PROD_COMPOSE:    ${{ vars.PROD_COMPOSE_PATH || '/srv/prod/docker-compose.yml' }}
+  HEALTHCHECK_URL: ${{ vars.HEALTHCHECK_URL }}
+
+concurrency:
+  group: deploy-${{ github.ref_name }}-${{ vars.SERVICE_NAME }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build & Push Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        run: echo "${{ github.token }}" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+
+      - name: Build & push
+        env:
+          IMAGE: ${{ env.IMAGE_REPO }}
+          SHA:   ${{ github.sha }}
+        run: |
+          docker build -t $IMAGE:$SHA -t $IMAGE:main .
+          docker push  $IMAGE:$SHA
+          docker push  $IMAGE:main
+
+  deploy:
+    name: Deploy to Production
+    needs: build
+    runs-on: self-hosted          # Dev runner
+    environment: production       # requires manual approval
+    timeout-minutes: 20
+    steps:
+      - name: Ensure Docker context to Prod
+        run: |
+          docker context ls | grep -q " ${{ env.PROD_CONTEXT }} " || \
+            docker context create ${{ env.PROD_CONTEXT }} --docker "host=ssh://prod"
+          docker --context ${{ env.PROD_CONTEXT }} info
+
+      - name: Pull new image on Prod
+        run: |
+          docker --context ${{ env.PROD_CONTEXT }} compose -f "${{ env.PROD_COMPOSE }}" pull "${{ env.SERVICE_NAME }}"
+
+      - name: Restart service on Prod
+        run: |
+          docker --context ${{ env.PROD_CONTEXT }} compose -f "${{ env.PROD_COMPOSE }}" up -d "${{ env.SERVICE_NAME }}"
+          docker --context ${{ env.PROD_CONTEXT }} compose -f "${{ env.PROD_COMPOSE }}" ps
+
+      - name: Health check
+        if: ${{ env.HEALTHCHECK_URL != '' }}
+        run: |
+          URL="${{ env.HEALTHCHECK_URL }}"
+          echo "Checking $URL"
+          for i in {1..15}; do
+            code=$(curl -fsS -o /dev/null -w "%{http_code}" "$URL" || true)
+            if [ "$code" = "200" ] || [ "$code" = "204" ]; then
+              echo "Healthy ($code)"
+              exit 0
+            fi
+            echo "Attempt $i: got $code, retrying..."
+            sleep 4
+          done
+          echo "Health check failed"
+          exit 1
