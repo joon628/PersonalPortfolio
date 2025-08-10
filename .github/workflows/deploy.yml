@@ -35,9 +35,20 @@ jobs:
           # Wait for tunnel to be established
           sleep 2
 
+      - name: Debug secrets
+        run: |
+          echo "Registry user exists: ${{ secrets.REGISTRY_USER != '' }}"
+          echo "Registry pass exists: ${{ secrets.REGISTRY_PASS != '' }}"
+          echo "User length: $(echo -n '${{ secrets.REGISTRY_USER }}' | wc -c)"
+          echo "Pass length: $(echo -n '${{ secrets.REGISTRY_PASS }}' | wc -c)"
+
       - name: Login to production registry
         run: |
-          echo "${{ secrets.REGISTRY_PASS }}" | docker login localhost:5000 -u "${{ secrets.REGISTRY_USER }}" --password-stdin
+          if [ -z "${{ secrets.REGISTRY_PASS }}" ]; then
+            echo "ERROR: REGISTRY_PASS secret is empty!"
+            exit 1
+          fi
+          echo '${{ secrets.REGISTRY_PASS }}' | docker login localhost:5000 -u '${{ secrets.REGISTRY_USER }}' --password-stdin
 
       - name: Build and push image
         env:
