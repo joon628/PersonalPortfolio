@@ -7,66 +7,63 @@ on:
 
 env:
   APP_NAME:        ${{ vars.APP_NAME }}
-  IMAGE_REPO:      ${{ vars.IMAGE_REPO }}
   SERVICE_NAME:    ${{ vars.SERVICE_NAME }}
-  PROD_CONTEXT:    ${{ vars.PROD_DOCKER_CONTEXT || 'prod' }}
   PROD_COMPOSE:    ${{ vars.PROD_COMPOSE_PATH || '/srv/prod/docker-compose.yml' }}
   HEALTHCHECK_URL: ${{ vars.HEALTHCHECK_URL }}
+  REGISTRY_USER:   ${{ secrets.REGISTRY_USER }}  # Store as secret
+  REGISTRY_PASS:   ${{ secrets.REGISTRY_PASS }}  # Store as secret
 
 concurrency:
   group: deploy-${{ github.ref_name }}-${{ vars.SERVICE_NAME }}
   cancel-in-progress: false
 
 jobs:
-  build:
-    name: Build & Push Image
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
+  build-and-deploy:
+    name: Build & Deploy to Production
+    runs-on: self-hosted          # Dev runner
+    environment: production       # requires manual approval
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
-      - uses: docker/setup-buildx-action@v3
+      - name: Set up SSH tunnel to production registry
+        run: |
+          # Kill any existing tunnel
+          pkill -f "ssh.*-L 5000:localhost:5000" || true
+          
+          # Create SSH tunnel to production registry
+          ssh -f -N -L 5000:localhost:5000 joon628@prod
+          
+          # Wait for tunnel to be established
+          sleep 2
 
-      - name: Login to GHCR
-        run: echo "${{ github.token }}" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+      - name: Login to production registry
+        run: |
+          echo "${{ env.REGISTRY_PASS }}" | docker login localhost:5000 -u "${{ env.REGISTRY_USER }}" --password-stdin
 
-      - name: Build & push
+      - name: Build and push image
         env:
-          IMAGE: ${{ env.IMAGE_REPO }}
+          IMAGE: localhost:5000/portfolio
           SHA:   ${{ github.sha }}
         run: |
+          # Build the image
           docker build -t $IMAGE:$SHA -t $IMAGE:main .
-          docker push  $IMAGE:$SHA
-          docker push  $IMAGE:main
-
-  deploy:
-    name: Deploy to Production
-    needs: build
-    runs-on: self-hosted          # Dev runner
-    environment: production       # requires manual approval
-    timeout-minutes: 20
-    steps:
-      - name: Ensure Docker context to Prod
-        run: |
-          # Remove existing context if it exists
-          docker context rm ${{ env.PROD_CONTEXT }} 2>/dev/null || true
           
-          # Create context with explicit username
-          docker context create ${{ env.PROD_CONTEXT }} --docker "host=ssh://joon628@prod"
-          
-          # Verify connection
-          docker --context ${{ env.PROD_CONTEXT }} info
+          # Push to production registry through tunnel
+          docker push $IMAGE:$SHA
+          docker push $IMAGE:main
 
-      - name: Pull new image on Prod
+      - name: Deploy on production
         run: |
+          # Update the service to use the new image
           ssh joon628@prod "cd /srv/prod && docker compose pull ${{ env.SERVICE_NAME }}"
-
-      - name: Restart service on Prod
-        run: |
           ssh joon628@prod "cd /srv/prod && docker compose up -d ${{ env.SERVICE_NAME }}"
           ssh joon628@prod "cd /srv/prod && docker compose ps ${{ env.SERVICE_NAME }}"
+
+      - name: Clean up SSH tunnel
+        if: always()
+        run: |
+          pkill -f "ssh.*-L 5000:localhost:5000" || true
 
       - name: Health check
         if: ${{ env.HEALTHCHECK_URL != '' }}
