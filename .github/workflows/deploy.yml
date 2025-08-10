@@ -50,8 +50,9 @@ jobs:
     steps:
       - name: Ensure Docker context to Prod
         run: |
-          docker context ls | grep -q " ${{ env.PROD_CONTEXT }} " || \
+          if ! docker context ls | grep -q " ${{ env.PROD_CONTEXT }} "; then
             docker context create ${{ env.PROD_CONTEXT }} --docker "host=ssh://prod"
+          fi
           docker --context ${{ env.PROD_CONTEXT }} info
 
       - name: Pull new image on Prod
