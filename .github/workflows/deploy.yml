@@ -61,12 +61,12 @@ jobs:
 
       - name: Pull new image on Prod
         run: |
-          docker --context ${{ env.PROD_CONTEXT }} compose -f "${{ env.PROD_COMPOSE }}" pull "${{ env.SERVICE_NAME }}"
+          ssh joon628@prod "cd /srv/prod && docker compose pull ${{ env.SERVICE_NAME }}"
 
       - name: Restart service on Prod
         run: |
-          docker --context ${{ env.PROD_CONTEXT }} compose -f "${{ env.PROD_COMPOSE }}" up -d "${{ env.SERVICE_NAME }}"
-          docker --context ${{ env.PROD_CONTEXT }} compose -f "${{ env.PROD_COMPOSE }}" ps
+          ssh joon628@prod "cd /srv/prod && docker compose up -d ${{ env.SERVICE_NAME }}"
+          ssh joon628@prod "cd /srv/prod && docker compose ps ${{ env.SERVICE_NAME }}"
 
       - name: Health check
         if: ${{ env.HEALTHCHECK_URL != '' }}
