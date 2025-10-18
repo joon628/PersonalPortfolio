@@ -1,3 +1,4 @@
+
 # Portfolio Admin System with SQLite
 
 A professional portfolio website with a comprehensive admin panel backed by SQLite database.

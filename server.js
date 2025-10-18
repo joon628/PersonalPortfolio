@@ -209,6 +209,11 @@ app.post('/api/auth/change-password', requireAuth, (req, res) => {
 
 // Get all portfolio data
 app.get('/api/portfolio', requireAuth, (req, res) => {
+    // Set cache control headers to prevent caching
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
     db.all("SELECT section_name, data FROM portfolio_data ORDER BY section_name", (err, rows) => {
         if (err) {
             return res.status(500).json({ error: 'Database error' });
@@ -230,6 +235,11 @@ app.get('/api/portfolio', requireAuth, (req, res) => {
 
 // Get portfolio data for public view (no auth required)
 app.get('/api/portfolio/public', (req, res) => {
+    // Set cache control headers to prevent caching
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
     db.all("SELECT section_name, data FROM portfolio_data ORDER BY section_name", (err, rows) => {
         if (err) {
             return res.status(500).json({ error: 'Database error' });

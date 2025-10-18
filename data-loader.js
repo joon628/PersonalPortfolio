@@ -138,35 +138,49 @@ function updateResearchSection(data) {
 // Update Skills section
 function updateSkillsSection(data) {
     if (!data.skills || data.skills.length === 0) return;
-    
-    const skillsGrid = document.querySelector('#skills .skills-grid');
-    if (!skillsGrid) return;
-    
-    skillsGrid.innerHTML = data.skills
+
+    const sectionContent = document.querySelector('#skills .section-content');
+    if (!sectionContent) return;
+
+    // Split skills into two columns
+    const leftColumnSkills = data.skills.slice(0, Math.ceil(data.skills.length / 2));
+    const rightColumnSkills = data.skills.slice(Math.ceil(data.skills.length / 2));
+
+    const renderSkillCategories = (skills) => skills
         .map(category => `
             <div class="skill-category">
                 <h3>${category.category || ''}</h3>
-                <div class="skills-list">
-                    ${category.skills.map(skill => `<span class="skill">${skill}</span>`).join('')}
+                <div class="skill-tags">
+                    ${category.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
                 </div>
             </div>
         `)
         .join('');
+
+    sectionContent.innerHTML = `
+        <div class="left-column">
+            ${renderSkillCategories(leftColumnSkills)}
+        </div>
+        <div class="right-column">
+            ${renderSkillCategories(rightColumnSkills)}
+        </div>
+    `;
 }
 
 // Update Certifications section
 function updateCertificationsSection(data) {
     if (!data.certifications || data.certifications.length === 0) return;
-    
-    const certGrid = document.querySelector('#certifications .cert-grid');
+
+    const certGrid = document.querySelector('#certifications .certifications-grid');
     if (!certGrid) return;
-    
+
     certGrid.innerHTML = data.certifications
         .map(cert => `
-            <div class="cert-item">
-                <h3>${cert.name || ''}</h3>
-                <div class="issuer">${cert.issuer || ''}</div>
-                <div class="date">${cert.date || ''}</div>
+            <div class="cert-card">
+                <div class="cert-icon">${cert.icon || '📜'}</div>
+                <div class="cert-title">${cert.name || ''}</div>
+                <div class="cert-issuer">${cert.issuer || ''}</div>
+                <div class="cert-year">${cert.date || ''}</div>
                 ${cert.credentialId ? `<div class="credential-id">ID: ${cert.credentialId}</div>` : ''}
             </div>
         `)
@@ -206,16 +220,16 @@ function updateProjectsSection(data) {
 // Update Education section
 function updateEducationSection(data) {
     if (!data.education || data.education.length === 0) return;
-    
-    const eduList = document.querySelector('#education .education-list');
-    if (!eduList) return;
-    
-    eduList.innerHTML = data.education
+
+    const eduGrid = document.querySelector('#education .education-grid');
+    if (!eduGrid) return;
+
+    eduGrid.innerHTML = data.education
         .map(edu => `
-            <div class="education-item">
-                <h3>${edu.degree || ''}</h3>
-                <div class="institution">${edu.institution || ''}</div>
-                <div class="date">${edu.startDate || ''} - ${edu.endDate || ''}</div>
+            <div class="education-card">
+                <div class="university-name">${edu.institution || ''}</div>
+                <div class="degree-program">${edu.degree || ''}</div>
+                <div class="degree-years">${edu.startDate || ''}–${edu.endDate || ''}</div>
                 ${edu.gpa ? `<div class="gpa">GPA: ${edu.gpa}</div>` : ''}
                 ${edu.honors ? `<div class="honors">${edu.honors}</div>` : ''}
             </div>
@@ -226,18 +240,18 @@ function updateEducationSection(data) {
 // Update Publications section
 function updatePublicationsSection(data) {
     if (!data.publications || data.publications.length === 0) return;
-    
-    const pubList = document.querySelector('#publications .publication-list');
-    if (!pubList) return;
-    
-    pubList.innerHTML = data.publications
+
+    const pubGrid = document.querySelector('#publications .publications-grid');
+    if (!pubGrid) return;
+
+    pubGrid.innerHTML = data.publications
         .map(pub => `
-            <div class="publication-item">
-                <h3>${pub.title || ''}</h3>
-                <div class="authors">${pub.authors || ''}</div>
-                <div class="venue">${pub.venue || ''}</div>
-                <div class="year">${pub.year || ''}</div>
-                ${pub.link ? `<a href="${pub.link}" target="_blank" class="pub-link">View →</a>` : ''}
+            <div class="publication-card academic">
+                <div class="publication-year">${pub.year || ''}</div>
+                <div class="publication-title">${pub.title || ''}</div>
+                <div class="publication-authors">${pub.authors || ''}</div>
+                <div class="publication-venue">${pub.venue || ''}</div>
+                ${pub.link ? `<button class="publication-btn" onclick="window.open('${pub.link}', '_blank')">View Publication</button>` : ''}
             </div>
         `)
         .join('');
@@ -246,17 +260,17 @@ function updatePublicationsSection(data) {
 // Update Patents section
 function updatePatentsSection(data) {
     if (!data.patents || data.patents.length === 0) return;
-    
-    const patentList = document.querySelector('#patents .patent-list');
-    if (!patentList) return;
-    
-    patentList.innerHTML = data.patents
+
+    const patentGrid = document.querySelector('#patents .patents-grid');
+    if (!patentGrid) return;
+
+    patentGrid.innerHTML = data.patents
         .map(patent => `
-            <div class="patent-item">
-                <h3>${patent.title || ''}</h3>
-                <div class="patent-number">Patent #: ${patent.number || ''}</div>
-                <div class="status">Status: ${patent.status || ''}</div>
-                <div class="date">${patent.date || ''}</div>
+            <div class="patent-card">
+                <div class="patent-title">${patent.title || ''}</div>
+                <div class="patent-number">${patent.number || ''}</div>
+                <div class="patent-date">${patent.date || ''}</div>
+                ${patent.link ? `<a href="${patent.link}" target="_blank" class="patent-link">View Patent</a>` : ''}
             </div>
         `)
         .join('');
@@ -265,17 +279,17 @@ function updatePatentsSection(data) {
 // Update Honors section
 function updateHonorsSection(data) {
     if (!data.honors || data.honors.length === 0) return;
-    
-    const honorsList = document.querySelector('#honors .honors-list');
-    if (!honorsList) return;
-    
-    honorsList.innerHTML = data.honors
+
+    const honorsGrid = document.querySelector('#honors .honors-grid');
+    if (!honorsGrid) return;
+
+    honorsGrid.innerHTML = data.honors
         .map(honor => `
-            <div class="honor-item">
-                <h3>${honor.title || ''}</h3>
-                <div class="issuer">${honor.issuer || ''}</div>
-                <div class="date">${honor.date || ''}</div>
-                ${honor.description ? `<p>${formatDescription(honor.description)}</p>` : ''}
+            <div class="honor-card">
+                <div class="honor-icon">${honor.icon || '🏆'}</div>
+                <div class="honor-title">${honor.title || ''}</div>
+                <div class="honor-desc">${formatDescription(honor.description || '')}</div>
+                <div class="honor-year">${honor.date || ''}</div>
             </div>
         `)
         .join('');
@@ -307,16 +321,17 @@ function updateServiceSection(data) {
 // Update Affiliations section
 function updateAffiliationsSection(data) {
     if (!data.affiliations || data.affiliations.length === 0) return;
-    
-    const affList = document.querySelector('#affiliations .affiliations-list');
-    if (!affList) return;
-    
-    affList.innerHTML = data.affiliations
+
+    const affGrid = document.querySelector('#affiliations .affiliations-grid');
+    if (!affGrid) return;
+
+    affGrid.innerHTML = data.affiliations
         .map(aff => `
-            <div class="affiliation-item">
-                <h3>${aff.name || ''}</h3>
-                <div class="role">${aff.role || ''}</div>
-                ${aff.period ? `<div class="period">${aff.period}</div>` : ''}
+            <div class="affiliation-card">
+                <h3 class="affiliation-title">${aff.role || ''}</h3>
+                <div class="affiliation-org">${aff.name || ''}</div>
+                <div class="affiliation-year">${aff.period || ''}</div>
+                ${aff.description ? `<div class="affiliation-description">${formatDescription(aff.description)}</div>` : ''}
             </div>
         `)
         .join('');
@@ -325,17 +340,29 @@ function updateAffiliationsSection(data) {
 // Update Languages section
 function updateLanguagesSection(data) {
     if (!data.languages || data.languages.length === 0) return;
-    
-    const langList = document.querySelector('#languages .languages-list');
-    if (!langList) return;
-    
-    langList.innerHTML = data.languages
-        .map(lang => `
-            <div class="language-item">
-                <span class="language">${lang.name || ''}</span>
-                <span class="proficiency">${lang.proficiency || ''}</span>
-            </div>
-        `)
+
+    const langGrid = document.querySelector('#languages .languages-grid');
+    if (!langGrid) return;
+
+    langGrid.innerHTML = data.languages
+        .map(lang => {
+            let proficiencyClass = 'proficiency-intermediate';
+            if (lang.proficiency && lang.proficiency.toLowerCase().includes('native')) {
+                proficiencyClass = 'proficiency-native';
+            } else if (lang.proficiency && lang.proficiency.toLowerCase().includes('fluent')) {
+                proficiencyClass = 'proficiency-fluent';
+            }
+
+            return `
+                <div class="language-card">
+                    <div class="language-name">${lang.name || ''}</div>
+                    <div class="language-level">${lang.proficiency || ''}</div>
+                    <div class="language-proficiency">
+                        <div class="proficiency-bar ${proficiencyClass}"></div>
+                    </div>
+                </div>
+            `;
+        })
         .join('');
 }
 
