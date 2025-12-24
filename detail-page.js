@@ -7,6 +7,20 @@ function getApiBaseUrl() {
     return isDev ? 'http://localhost:1337/api' : '/api';
 }
 
+// Transform image URLs in content for the current environment
+function transformContentUrls(content) {
+    if (!content || typeof content !== 'string') return content;
+
+    const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (isDev) {
+        return content;
+    } else {
+        // In production, convert localhost:1337 URLs to relative paths
+        return content.replace(/https?:\/\/localhost:1337/g, '');
+    }
+}
+
 // Parse URL parameters
 function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
@@ -27,12 +41,14 @@ function renderRichText(content) {
 
     // If it's a string, parse it as markdown using marked.js
     if (typeof content === 'string') {
+        // Transform localhost URLs for production
+        const transformedContent = transformContentUrls(content);
         // Use marked.js to parse markdown to HTML
         if (typeof marked !== 'undefined') {
-            return marked.parse(content);
+            return marked.parse(transformedContent);
         }
         // Fallback if marked.js not loaded
-        return `<p>${content}</p>`;
+        return `<p>${transformedContent}</p>`;
     }
 
     return '';
