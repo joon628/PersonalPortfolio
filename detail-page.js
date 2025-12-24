@@ -1,6 +1,12 @@
 // Detail Page Loader
 // Loads detailed content for experiences, research, publications, and projects
 
+// Determine API base URL based on environment
+function getApiBaseUrl() {
+    const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    return isDev ? 'http://localhost:1337/api' : '/api';
+}
+
 // Parse URL parameters
 function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
@@ -47,7 +53,8 @@ async function fetchDetailContent(type, slug) {
     }
 
     try {
-        const url = `http://localhost:1337/api/${endpoint}?filters[slug][$eq]=${slug}&populate=*`;
+        const baseUrl = getApiBaseUrl();
+        const url = `${baseUrl}/${endpoint}?filters[slug][$eq]=${slug}&populate=*`;
         const response = await fetch(url);
 
         if (!response.ok) {
