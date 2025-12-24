@@ -95,6 +95,9 @@ function updateExperienceSection(data) {
                 <time>${exp.startDate || ''} – ${exp.endDate || 'Present'}</time>
                 <div class="role">${exp.title || ''}</div>
                 <p class="desc">${formatDescription(exp.description)}</p>
+                ${exp.detailedContent && exp.slug ? `
+                <a href="detail.html?type=experience&slug=${exp.slug}" class="read-more-btn">Read More →</a>
+                ` : ''}
             </div>
         `;
         
@@ -130,6 +133,9 @@ function updateResearchSection(data) {
                 <div class="research-description">
                     ${formatDescription(item.description)}
                 </div>
+                ${item.detailedContent && item.slug ? `
+                <a href="detail.html?type=research&slug=${item.slug}" class="read-more-btn">Read More →</a>
+                ` : ''}
             </div>
         `)
         .join('');
@@ -204,10 +210,10 @@ function updateProjectsSection(data) {
                 <div class="project-description">
                     ${formatDescription(project.description)}
                 </div>
-                ${project.link ? `
                 <div class="project-links">
-                    <a href="${project.link}" target="_blank" class="project-link">${project.linkText || 'GitHub Repository'}</a>
-                </div>` : ''}
+                    ${project.link ? `<a href="${project.link}" target="_blank" class="project-link">${project.linkText || 'GitHub Repository'}</a>` : ''}
+                    ${project.detailedContent && project.slug ? `<a href="detail.html?type=project&slug=${project.slug}" class="read-more-btn">Read More →</a>` : ''}
+                </div>
                 ${project.technologies && project.technologies.length > 0 ? `
                 <div class="project-tech">
                     ${project.technologies.map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
@@ -251,7 +257,10 @@ function updatePublicationsSection(data) {
                 <div class="publication-title">${pub.title || ''}</div>
                 <div class="publication-authors">${pub.authors || ''}</div>
                 <div class="publication-venue">${pub.venue || ''}</div>
-                ${pub.link ? `<button class="publication-btn" onclick="window.open('${pub.link}', '_blank')">View Publication</button>` : ''}
+                <div class="publication-actions">
+                    ${pub.link ? `<button class="publication-btn" onclick="window.open('${pub.link}', '_blank')">View Publication</button>` : ''}
+                    ${pub.detailedContent && pub.slug ? `<a href="detail.html?type=publication&slug=${pub.slug}" class="read-more-btn">Read More →</a>` : ''}
+                </div>
             </div>
         `)
         .join('');

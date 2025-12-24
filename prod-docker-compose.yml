@@ -1,0 +1,213 @@
+version: "3.9"
+networks: { proxy: {} }
+
+services:
+  traefik:
+    image: traefik:v3
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false   # <-- add this
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --entrypoints.web.address=:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./dynamic:/etc/traefik/dynamic:ro
+    networks: [proxy]
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --config /etc/cloudflared/config.yml run
+    volumes:
+      - ./cloudflared:/etc/cloudflared
+    networks: [proxy]
+
+  # apta-med.com
+  aptame:
+    image: localhost:5000/aptamed:main
+    container_name: aptame
+    restart: unless-stopped
+    networks: [proxy]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.aptame.rule=Host(`apta-med.com`)
+      - traefik.http.routers.aptame.entrypoints=web
+      - traefik.http.routers.aptame.middlewares=chain-secure@file
+      - traefik.http.services.aptame.loadbalancer.server.port=80
+
+  # portfolio.organictechs.com (Frontend - static nginx with API proxy)
+  portfolio:
+      image: localhost:5000/portfolio-frontend:main
+      container_name: prod-portfolio
+      networks: [proxy]
+      depends_on:
+        - portfolio-strapi
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.portfolio.rule=Host(`portfolio.organictechs.com`)
+        - traefik.http.routers.portfolio.entrypoints=web
+        - traefik.http.routers.portfolio.middlewares=chain-secure@file
+        - traefik.http.services.portfolio.loadbalancer.server.port=80
+      restart: unless-stopped
+
+  # portfolio-strapi (CMS Backend - INTERNAL ONLY, not publicly accessible)
+  portfolio-strapi:
+    image: localhost:5000/portfolio-strapi:main
+    container_name: portfolio-strapi
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=1337
+      - APP_KEYS=${PORTFOLIO_STRAPI_APP_KEYS}
+      - API_TOKEN_SALT=${PORTFOLIO_STRAPI_API_TOKEN_SALT}
+      - ADMIN_JWT_SECRET=${PORTFOLIO_STRAPI_ADMIN_JWT_SECRET}
+      - TRANSFER_TOKEN_SALT=${PORTFOLIO_STRAPI_TRANSFER_TOKEN_SALT}
+      - JWT_SECRET=${PORTFOLIO_STRAPI_JWT_SECRET}
+    volumes:
+      - /srv/prod/sites/portfolio/strapi-data:/app/.tmp
+      - /srv/prod/sites/portfolio/strapi-uploads:/app/public/uploads
+    networks: [proxy]
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:1337/_health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # cnkpartner.com (+ www)
+  cnk-landingpage:
+    image: localhost:5000/cnk-landingpage:master
+    container_name: cnk-landingpage
+    restart: unless-stopped
+    networks: [proxy]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cnk-landingpage.rule=Host(`cnkpartner.com`)"
+      - "traefik.http.routers.cnk-landingpage.entrypoints=web"
+      - "traefik.http.routers.cnk-landingpage.middlewares=chain-secure@file"
+      - "traefik.http.services.cnk-landingpage.loadbalancer.server.port=80"
+
+  # inprocessing.organictechs.com
+  inproc:
+    image: localhost:5000/inprocessed:main
+    container_name: inprocessed
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_PATH: /app/data/users.db
+      SESSION_SECRET: ${INPROC_SESSION_SECRET}  # Add to .env file
+    volumes:
+      - /srv/prod/sites/inprocessing/data:/app/data
+    networks: [proxy]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.inproc.rule=Host(`inprocessing.organictechs.com`)
+      - traefik.http.routers.inproc.entrypoints=web
+      - traefik.http.routers.inproc.middlewares=chain-secure@file
+      - traefik.http.services.inproc.loadbalancer.server.port=3000
+
+  # medicalwiki.organictechs.com (placeholder; swap to mediawiki/wikijs)
+  wiki-web:
+      image: localhost:5000/medical-wiki-web:latest
+      container_name: wiki-web
+      environment:
+        - NODE_ENV=production
+        - NEXT_PUBLIC_STRAPI_API_URL=https://medicalwiki.organictechs.com
+        - STRAPI_API_URL=http://wiki-cms:1337/api
+        - STRAPI_INTERNAL_URL=http://wiki-cms:1337/
+        - STRAPI_API_TOKEN=${WIKI_STRAPI_API_TOKEN}
+        - ELASTICSEARCH_URL=http://wiki-elasticsearch:9200
+      networks: [proxy]
+      depends_on:
+        - wiki-cms
+        - wiki-elasticsearch
+      restart: unless-stopped
+      labels:
+        - traefik.enable=true
+        # Main application routes (all routes except /admin and specific Strapi auth/user endpoints)
+        - traefik.http.routers.wiki.rule=Host(`medicalwiki.organictechs.com`) && !PathPrefix(`/admin`) && !PathPrefix(`/api/auth`) && !PathPrefix(`/api/users`)
+        - traefik.http.routers.wiki.entrypoints=web
+        - traefik.http.routers.wiki.priority=100
+        - traefik.http.routers.wiki.middlewares=chain-secure@file
+        - traefik.http.services.wiki.loadbalancer.server.port=3000
+
+  wiki-cms:
+    image: localhost:5000/medical-wiki-cms:latest
+    container_name: wiki-cms
+    environment:
+      - NODE_ENV=production
+      - DATABASE_CLIENT=sqlite
+      - DATABASE_FILENAME=../../data/data.db
+      - HOST=0.0.0.0
+      - PORT=1337
+      - URL=https://medicalwiki.organictechs.com
+      - PUBLIC_URL=https://medicalwiki.organictechs.com
+      - ADMIN_PATH=/admin
+      - APP_KEYS=${WIKI_APP_KEYS}
+      - JWT_SECRET=${WIKI_JWT_SECRET}
+      - ADMIN_JWT_SECRET=${WIKI_ADMIN_JWT_SECRET}
+      - API_TOKEN_SALT=${WIKI_API_TOKEN_SALT}
+      - TRANSFER_TOKEN_SALT=${WIKI_TRANSFER_TOKEN_SALT}
+      - ENCRYPTION_KEY=${WIKI_ENCRYPTION_KEY}
+    volumes:
+      - wiki_cms_data:/data
+      - wiki_cms_uploads:/app/public/uploads
+    networks: [proxy]
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      # Strapi authentication endpoints (highest priority)
+      - traefik.http.routers.wiki-cms-auth.rule=Host(`medicalwiki.organictechs.com`) && (PathPrefix(`/api/auth`) || PathPrefix(`/api/users`))
+      - traefik.http.routers.wiki-cms-auth.entrypoints=web
+      - traefik.http.routers.wiki-cms-auth.priority=300
+      - traefik.http.routers.wiki-cms-auth.middlewares=chain-secure@file
+      - traefik.http.routers.wiki-cms-auth.service=wiki-cms
+      # Strapi admin interface
+      - traefik.http.routers.wiki-cms-admin.rule=Host(`medicalwiki.organictechs.com`) && PathPrefix(`/admin`)
+      - traefik.http.routers.wiki-cms-admin.entrypoints=web
+      - traefik.http.routers.wiki-cms-admin.priority=200
+      - traefik.http.routers.wiki-cms-admin.middlewares=chain-secure@file
+      - traefik.http.routers.wiki-cms-admin.service=wiki-cms
+      - traefik.http.services.wiki-cms.loadbalancer.server.port=1337
+
+  wiki-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: wiki-elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=medical-wiki-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - wiki_elasticsearch_data:/usr/share/elasticsearch/data
+    networks: [proxy]
+    restart: unless-stopped
+
+  registry:
+      image: registry:2
+      container_name: docker-registry
+      restart: unless-stopped
+      ports:
+        - "127.0.0.1:5000:5000"  # Only localhost access
+      environment:
+        REGISTRY_AUTH: htpasswd
+        REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+        REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+        REGISTRY_STORAGE_DELETE_ENABLED: "true"
+      volumes:
+        - /srv/registry/data:/var/lib/registry
+        - /srv/registry/auth:/auth
+      networks:
+        - proxy
+
+volumes:
+  wiki_cms_data:
+  wiki_cms_uploads:
+  wiki_elasticsearch_data:

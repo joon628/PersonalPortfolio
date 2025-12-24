@@ -1,0 +1,120 @@
+# Production Docker Compose Configuration Reference
+# =================================================
+# Instructions: Add/Update these services in /srv/prod/docker-compose.yml on production server
+#
+# CHANGES FROM CURRENT SETUP:
+# 1. UPDATE existing 'portfolio' service (frontend) - change image and configuration
+# 2. ADD new 'portfolio-strapi' service (CMS backend - internal only)
+
+services:
+  # ============================================================================
+  # FRONTEND - portfolio.organictechs.com
+  # ============================================================================
+  # UPDATE the existing portfolio service with this configuration:
+  portfolio:
+      image: localhost:5000/portfolio-frontend:main  # CHANGED: new image name
+      container_name: prod-portfolio
+      # REMOVED: old volumes - new frontend is static nginx, no volumes needed
+      # REMOVED: environment variables - static site doesn't need them
+      networks: [proxy]
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.portfolio.rule=Host(`portfolio.organictechs.com`)
+        - traefik.http.routers.portfolio.entrypoints=web
+        - traefik.http.routers.portfolio.middlewares=chain-secure@file
+        - traefik.http.services.portfolio.loadbalancer.server.port=80  # CHANGED: nginx port
+      restart: unless-stopped
+
+  # ============================================================================
+  # STRAPI CMS - INTERNAL ONLY (No public access)
+  # ============================================================================
+  # ADD this new service:
+  portfolio-strapi:
+    image: localhost:5000/portfolio-strapi:main
+    container_name: portfolio-strapi
+    restart: unless-stopped
+    environment:
+      # Node environment
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=1337
+      # Security: Generate these secrets and add to /srv/prod/.env
+      # Run this 5 times: node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+      - APP_KEYS=${PORTFOLIO_STRAPI_APP_KEYS}
+      - API_TOKEN_SALT=${PORTFOLIO_STRAPI_API_TOKEN_SALT}
+      - ADMIN_JWT_SECRET=${PORTFOLIO_STRAPI_ADMIN_JWT_SECRET}
+      - TRANSFER_TOKEN_SALT=${PORTFOLIO_STRAPI_TRANSFER_TOKEN_SALT}
+      - JWT_SECRET=${PORTFOLIO_STRAPI_JWT_SECRET}
+    volumes:
+      # Persist SQLite database (will be migrated from dev on first deploy)
+      - /srv/prod/sites/portfolio/strapi-data:/app/.tmp
+      # Persist uploads (will be migrated from dev on first deploy)
+      - /srv/prod/sites/portfolio/strapi-uploads:/app/public/uploads
+    networks: [proxy]
+    # NO TRAEFIK LABELS = Not publicly accessible
+    # Access via:
+    #   1. SSH tunnel: ssh -L 1337:localhost:1337 joon628@prod
+    #      Then browse: http://localhost:1337/admin
+    #   2. Tailscale: http://<prod-tailscale-ip>:1337/admin
+    #   3. Docker internal: http://portfolio-strapi:1337 (from other containers)
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:1337/_health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+# ============================================================================
+# SETUP INSTRUCTIONS
+# ============================================================================
+#
+# 1. GENERATE SECRETS FOR STRAPI
+#    On production server, run:
+#    node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+#
+#    Run 5 times and add to /srv/prod/.env:
+#    PORTFOLIO_STRAPI_APP_KEYS=key1,key2,key3,key4
+#    PORTFOLIO_STRAPI_API_TOKEN_SALT=...
+#    PORTFOLIO_STRAPI_ADMIN_JWT_SECRET=...
+#    PORTFOLIO_STRAPI_TRANSFER_TOKEN_SALT=...
+#    PORTFOLIO_STRAPI_JWT_SECRET=...
+#
+# 2. UPDATE /srv/prod/docker-compose.yml
+#    - Replace the 'portfolio' service with the updated version above
+#    - Add the 'portfolio-strapi' service
+#
+# 3. DATA MIGRATION (automatic on first deploy)
+#    The GitHub Actions workflow will:
+#    - Check if /srv/prod/sites/portfolio/strapi-data/data.db exists
+#    - If not, transfer from dev:
+#      * SQLite database: strapi/.tmp/data.db
+#      * Uploads: strapi/public/uploads/
+#    - Set proper permissions (chown 1000:1000)
+#
+# 4. PUSH TO GITHUB
+#    The workflow will trigger and:
+#    - Build both images (frontend + strapi)
+#    - Push to local registry (localhost:5000)
+#    - Migrate data if needed
+#    - Deploy both services
+#
+# 5. ACCESS STRAPI ADMIN PANEL
+#    Option A - SSH Tunnel (recommended):
+#      ssh -L 1337:localhost:1337 joon628@prod
+#      Open browser: http://localhost:1337/admin
+#
+#    Option B - Tailscale:
+#      Find prod IP: tailscale status
+#      Open browser: http://<prod-ip>:1337/admin
+#
+# 6. FRONTEND API CONFIGURATION
+#    The frontend uses nginx to proxy API requests to the internal Strapi container:
+#    - Browser requests: https://portfolio.organictechs.com/api/experiences
+#    - Nginx proxies to: http://portfolio-strapi:1337/api/experiences (internal Docker network)
+#    - Strapi is NOT publicly accessible (only via Tailscale or SSH tunnel for admin)
+#
+#    How it works:
+#    - api-client-strapi.js uses relative URLs (/api) in production
+#    - nginx.conf proxies /api/* to http://portfolio-strapi:1337/api/*
+#    - Both containers are on the same 'proxy' Docker network
+#    - This keeps Strapi completely internal while allowing frontend to access it

@@ -1,27 +1,59 @@
 version: '3.8'
 
 services:
-  portfolio:
-    build: .
-    container_name: portfolio-admin
+  # Strapi CMS Backend
+  strapi:
+    build:
+      context: .
+      dockerfile: Dockerfile.strapi
+    container_name: portfolio-strapi
+    restart: unless-stopped
     ports:
-      - "3002:3002"
-    volumes:
-      # Mount the database file to preserve data
-      - ./portfolio.db:/app/portfolio.db
-      # Optional: Mount data directory for additional persistence
-      - portfolio-data:/app/data
+      - "1337:1337"
     environment:
       - NODE_ENV=production
-      - PORT=3002
-    restart: unless-stopped
+      - HOST=0.0.0.0
+      - PORT=1337
+      - APP_KEYS=${APP_KEYS:-defaultkey1,defaultkey2,defaultkey3,defaultkey4}
+      - API_TOKEN_SALT=${API_TOKEN_SALT:-defaultsalt}
+      - ADMIN_JWT_SECRET=${ADMIN_JWT_SECRET:-defaultadminsecret}
+      - TRANSFER_TOKEN_SALT=${TRANSFER_TOKEN_SALT:-defaulttransfersalt}
+      - JWT_SECRET=${JWT_SECRET:-defaultjwtsecret}
+    volumes:
+      # Persist SQLite database
+      - strapi-data:/app/.tmp
+      # Persist uploads
+      - strapi-uploads:/app/public/uploads
     healthcheck:
-      test: ["CMD", "node", "-e", "http.get('http://localhost:3002/api/portfolio/public', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:1337/_health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 60s
+    networks:
+      - portfolio-network
+
+  # Frontend (Nginx serving static files)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: portfolio-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      strapi:
+        condition: service_healthy
+    networks:
+      - portfolio-network
 
 volumes:
-  portfolio-data:
+  strapi-data:
     driver: local
+  strapi-uploads:
+    driver: local
+
+networks:
+  portfolio-network:
+    driver: bridge

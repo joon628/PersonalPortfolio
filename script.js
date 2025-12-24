@@ -192,8 +192,36 @@ const imageObserver = new IntersectionObserver((entries) => {
 
 // ═══════════════════ INITIALIZATION ═══════════════════
 document.addEventListener('DOMContentLoaded', () => {
-  // Start split-screen intro animation
-  startIntroAnimation();
+  // Check if user has already seen the intro in this session
+  const hasSeenIntro = sessionStorage.getItem('hasSeenIntro');
+
+  if (hasSeenIntro) {
+    // Skip intro, go directly to main content
+    const intro = document.getElementById('intro');
+    const mainContent = document.getElementById('main-content');
+    const sideNav = document.getElementById('side-nav');
+    const headerName = document.querySelector('header .name');
+
+    intro.style.display = 'none';
+    mainContent.style.display = 'block';
+    mainContent.style.opacity = '1';
+    sideNav.style.display = 'block';
+    sideNav.style.opacity = '1';
+
+    // Make header name visible
+    if (headerName) {
+      headerName.style.visibility = 'visible';
+      headerName.style.opacity = '1';
+    }
+
+    // Ensure body classes are set
+    document.body.classList.add('intro-done');
+  } else {
+    // Start split-screen intro animation
+    startIntroAnimation();
+    // Mark that user has seen the intro
+    sessionStorage.setItem('hasSeenIntro', 'true');
+  }
   
   // Initialize expand/collapse - start collapsed
   const entries = document.querySelectorAll('.timeline .entry');

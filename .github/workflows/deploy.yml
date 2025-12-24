@@ -1,4 +1,4 @@
-name: Build & Deploy Portfolio
+name: Build & Deploy Portfolio (Frontend + Strapi CMS)
 
 on:
   push:
@@ -6,13 +6,14 @@ on:
   workflow_dispatch:
 
 env:
-  APP_NAME:        ${{ vars.APP_NAME }}
-  SERVICE_NAME:    ${{ vars.SERVICE_NAME }}
-  PROD_COMPOSE:    ${{ vars.PROD_COMPOSE_PATH || '/srv/prod/docker-compose.yml' }}
-  HEALTHCHECK_URL: ${{ vars.HEALTHCHECK_URL }}
+  APP_NAME:             ${{ vars.APP_NAME || 'portfolio' }}
+  FRONTEND_SERVICE:     ${{ vars.FRONTEND_SERVICE || 'portfolio' }}
+  STRAPI_SERVICE:       ${{ vars.STRAPI_SERVICE || 'portfolio-strapi' }}
+  PROD_COMPOSE:         ${{ vars.PROD_COMPOSE_PATH || '/srv/prod/docker-compose.yml' }}
+  HEALTHCHECK_URL:      ${{ vars.HEALTHCHECK_URL }}
 
 concurrency:
-  group: deploy-${{ github.ref_name }}-${{ vars.SERVICE_NAME }}
+  group: deploy-${{ github.ref_name }}-portfolio
   cancel-in-progress: false
 
 jobs:
@@ -28,19 +29,12 @@ jobs:
         run: |
           # Kill any existing tunnel
           pkill -f "ssh.*-L 5000:localhost:5000" || true
-          
+
           # Create SSH tunnel to production registry
           ssh -f -N -L 5000:localhost:5000 joon628@prod
-          
+
           # Wait for tunnel to be established
           sleep 2
-
-      - name: Debug secrets
-        run: |
-          echo "Registry user exists: ${{ secrets.REGISTRY_USER != '' }}"
-          echo "Registry pass exists: ${{ secrets.REGISTRY_PASS != '' }}"
-          echo "User length: $(echo -n '${{ secrets.REGISTRY_USER }}' | wc -c)"
-          echo "Pass length: $(echo -n '${{ secrets.REGISTRY_PASS }}' | wc -c)"
 
       - name: Login to production registry
         run: |
@@ -50,43 +44,98 @@ jobs:
           fi
           echo '${{ secrets.REGISTRY_PASS }}' | docker login localhost:5000 -u '${{ secrets.REGISTRY_USER }}' --password-stdin
 
-      - name: Build and push image
+      - name: Build and push frontend image
         env:
-          IMAGE: localhost:5000/portfolio
+          IMAGE: localhost:5000/${{ env.APP_NAME }}-frontend
           SHA:   ${{ github.sha }}
         run: |
-          # Build the image
-          docker build -t $IMAGE:$SHA -t $IMAGE:main .
-          
-          # Push to production registry through tunnel
+          echo "Building frontend image..."
+          docker build -f Dockerfile.frontend -t $IMAGE:$SHA -t $IMAGE:main .
+
+          echo "Pushing frontend image to registry..."
           docker push $IMAGE:$SHA
           docker push $IMAGE:main
 
-      - name: Deploy on production
+      - name: Build and push Strapi CMS image
+        env:
+          IMAGE: localhost:5000/${{ env.APP_NAME }}-strapi
+          SHA:   ${{ github.sha }}
         run: |
-          # Update the service to use the new image
-          ssh joon628@prod "cd /srv/prod && docker compose pull ${{ env.SERVICE_NAME }}"
-          ssh joon628@prod "cd /srv/prod && docker compose up -d ${{ env.SERVICE_NAME }}"
-          ssh joon628@prod "cd /srv/prod && docker compose ps ${{ env.SERVICE_NAME }}"
+          echo "Building Strapi CMS image..."
+          docker build -f Dockerfile.strapi -t $IMAGE:$SHA -t $IMAGE:main .
+
+          echo "Pushing Strapi CMS image to registry..."
+          docker push $IMAGE:$SHA
+          docker push $IMAGE:main
+
+      - name: Migrate Strapi data to production (one-time setup)
+        run: |
+          echo "Checking if Strapi data migration is needed..."
+
+          # Check if data already exists on production
+          DATA_EXISTS=$(ssh joon628@prod "[ -f /srv/prod/sites/portfolio/strapi-data/data.db ] && echo 'yes' || echo 'no'")
+
+          if [ "$DATA_EXISTS" = "no" ]; then
+            echo "Data not found on production. Starting migration..."
+
+            # Create directories on production
+            ssh joon628@prod "mkdir -p /srv/prod/sites/portfolio/strapi-data"
+            ssh joon628@prod "mkdir -p /srv/prod/sites/portfolio/strapi-uploads"
+
+            # Transfer SQLite database
+            echo "Transferring SQLite database..."
+            scp strapi/.tmp/data.db joon628@prod:/srv/prod/sites/portfolio/strapi-data/data.db
+
+            # Transfer uploads directory
+            echo "Transferring uploads..."
+            rsync -avz --progress strapi/public/uploads/ joon628@prod:/srv/prod/sites/portfolio/strapi-uploads/
+
+            # Set proper permissions
+            ssh joon628@prod "chown -R 1000:1000 /srv/prod/sites/portfolio/strapi-data /srv/prod/sites/portfolio/strapi-uploads"
+
+            echo "Data migration completed successfully!"
+          else
+            echo "Strapi data already exists on production. Skipping migration."
+            echo "To force migration, manually remove /srv/prod/sites/portfolio/strapi-data/data.db on production."
+          fi
+
+      - name: Deploy frontend on production
+        run: |
+          echo "Deploying frontend..."
+          ssh joon628@prod "cd /srv/prod && docker compose pull ${{ env.FRONTEND_SERVICE }}"
+          ssh joon628@prod "cd /srv/prod && docker compose up -d ${{ env.FRONTEND_SERVICE }}"
+          ssh joon628@prod "cd /srv/prod && docker compose ps ${{ env.FRONTEND_SERVICE }}"
+
+      - name: Deploy Strapi CMS on production
+        run: |
+          echo "Deploying Strapi CMS..."
+          ssh joon628@prod "cd /srv/prod && docker compose pull ${{ env.STRAPI_SERVICE }}"
+          ssh joon628@prod "cd /srv/prod && docker compose up -d ${{ env.STRAPI_SERVICE }}"
+          ssh joon628@prod "cd /srv/prod && docker compose ps ${{ env.STRAPI_SERVICE }}"
 
       - name: Clean up SSH tunnel
         if: always()
         run: |
           pkill -f "ssh.*-L 5000:localhost:5000" || true
 
-      - name: Health check
+      - name: Health check frontend
         if: ${{ env.HEALTHCHECK_URL != '' }}
         run: |
           URL="${{ env.HEALTHCHECK_URL }}"
-          echo "Checking $URL"
+          echo "Checking frontend: $URL"
           for i in {1..15}; do
             code=$(curl -fsS -o /dev/null -w "%{http_code}" "$URL" || true)
             if [ "$code" = "200" ] || [ "$code" = "204" ]; then
-              echo "Healthy ($code)"
+              echo "Frontend healthy ($code)"
               exit 0
             fi
             echo "Attempt $i: got $code, retrying..."
             sleep 4
           done
-          echo "Health check failed"
+          echo "Frontend health check failed"
           exit 1
+
+      - name: Verify Strapi CMS is running
+        run: |
+          echo "Verifying Strapi CMS is running on production..."
+          ssh joon628@prod "docker compose -f ${{ env.PROD_COMPOSE }} ps ${{ env.STRAPI_SERVICE }} | grep -q 'Up' && echo 'Strapi CMS is running' || exit 1"

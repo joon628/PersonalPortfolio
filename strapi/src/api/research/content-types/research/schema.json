@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "researches",
+  "info": {
+    "singularName": "research",
+    "pluralName": "researches",
+    "displayName": "Research"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "area": {
+      "type": "string",
+      "required": true
+    },
+    "period": {
+      "type": "string"
+    },
+    "institution": {
+      "type": "string"
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "detailedContent": {
+      "type": "richtext"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "area"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "honors",
+  "info": {
+    "singularName": "honor",
+    "pluralName": "honors",
+    "displayName": "Honor"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "issuer": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+}

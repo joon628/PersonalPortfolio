@@ -1,162 +1,203 @@
+# Portfolio Website
 
-# Portfolio Admin System with SQLite
+A modern portfolio website built with Strapi CMS and static frontend.
 
-A professional portfolio website with a comprehensive admin panel backed by SQLite database.
+## Architecture
 
-## Features
+- **Frontend**: Static HTML/CSS/JS served by Nginx
+- **Backend**: Strapi v5 CMS with SQLite database
+- **Deployment**: Docker containers with docker-compose
 
-✅ **SQLite Database** - Persistent data storage across users and sessions  
-✅ **Multi-user Support** - Session-based authentication  
-✅ **Drag & Drop Ordering** - Reorder content in all major sections  
-✅ **Custom Link Text** - Specify custom button text for project links  
-✅ **Real-time Updates** - Changes immediately reflect on the main site  
-✅ **RESTful API** - Clean separation between frontend and backend  
+## Project Structure
 
-## Quick Start
+```
+.
+├── index.html              # Main portfolio page
+├── styles.css              # Styling
+├── script.js               # UI interactions
+├── api-client-strapi.js    # Strapi API client
+├── data-loader.js          # Data loading and DOM manipulation
+├── strapi/                 # Strapi CMS directory
+│   ├── src/               # Strapi source code
+│   │   └── api/          # Content types definitions
+│   ├── config/           # Strapi configuration
+│   └── package.json      # Strapi dependencies
+├── Dockerfile.frontend     # Frontend Docker image
+├── Dockerfile.strapi       # Strapi Docker image
+└── docker-compose.yml      # Multi-container orchestration
+```
+
+## Content Types
+
+The portfolio uses the following Strapi content types:
+- About (Single Type)
+- Contact (Single Type)
+- Experience (Collection)
+- Research (Collection)
+- Skills (Collection)
+- Certifications (Collection)
+- Projects (Collection)
+- Education (Collection)
+- Publications (Collection)
+- Patents (Collection)
+- Honors & Awards (Collection)
+- Service & Leadership (Collection)
+- Professional Affiliations (Collection)
+- Languages (Collection)
+
+## Local Development
 
 ### Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn
+- Node.js 18+
+- npm
 
-### Installation
+### Setup
 
-1. **Install dependencies:**
+1. **Install Strapi dependencies**:
    ```bash
+   cd strapi
    npm install
    ```
 
-2. **Initialize database:**
+2. **Start Strapi in development mode**:
    ```bash
-   npm run init-db
+   cd strapi
+   npm run develop
    ```
 
-3. **Start the server:**
+   Strapi admin panel will be available at http://localhost:1337/admin
+
+3. **Serve frontend** (in a separate terminal):
    ```bash
-   npm start
+   # Simple Python server
+   python3 -m http.server 8000
+
+   # Or use any static file server
+   npx serve .
    ```
 
-4. **Access the application:**
-   - Main site: http://localhost:3000
-   - Admin panel: http://localhost:3000/admin
+   Frontend will be available at http://localhost:8000
 
-### Default Login
-- **Username:** `admin`
-- **Password:** `portfolio2024`
+### First Time Setup
 
-## Development
+1. Access Strapi admin at http://localhost:1337/admin
+2. Create your admin account
+3. Add content to the various content types
+4. The frontend will automatically fetch and display the data
 
-### Start development server with auto-reload:
+## Docker Deployment
+
+### Prerequisites
+- Docker
+- Docker Compose
+
+### Setup
+
+1. **Create environment file**:
+   ```bash
+   cp .env.example .env
+   ```
+
+   Then edit `.env` and generate secure random values for all secrets:
+   ```bash
+   # Generate secure random strings
+   openssl rand -base64 32
+   ```
+
+2. **Build and start containers**:
+   ```bash
+   docker-compose up -d
+   ```
+
+3. **Access the services**:
+   - Frontend: http://localhost:3000
+   - Strapi Admin: http://localhost:1337/admin
+   - Strapi API: http://localhost:1337/api
+
+### Docker Commands
+
 ```bash
-npm run dev
+# Start services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Rebuild after code changes
+docker-compose up -d --build
+
+# Remove everything including volumes (data)
+docker-compose down -v
 ```
 
-### Database Management
+## Data Persistence
 
-The SQLite database (`portfolio.db`) stores:
-- User accounts and authentication
-- Portfolio content (sections and data)
-- System settings
+- **Strapi Database**: Stored in Docker volume `strapi-data` (SQLite in `.tmp/data.db`)
+- **Uploads**: Stored in Docker volume `strapi-uploads`
 
-To reset the database:
+To backup your data:
 ```bash
-rm portfolio.db
-npm run init-db
+# Backup database
+docker cp portfolio-strapi:/app/.tmp/data.db ./backup-data.db
+
+# Backup uploads
+docker cp portfolio-strapi:/app/public/uploads ./backup-uploads
 ```
 
-## API Endpoints
+## API Client
 
-### Authentication
-- `POST /api/login` - User login
-- `POST /api/logout` - User logout  
-- `GET /api/auth/status` - Check authentication status
+The frontend uses `api-client-strapi.js` to fetch data from Strapi. It includes:
+- Automatic date-based sorting for content
+- Smart date parsing for various formats
+- Error handling and fallbacks
 
-### Portfolio Data
-- `GET /api/portfolio/public` - Get portfolio data (public)
-- `GET /api/portfolio` - Get portfolio data (authenticated)
-- `POST /api/portfolio` - Save portfolio data (authenticated)
+## Sorting
 
-## File Structure
+Content is automatically sorted by date in descending order (newest first):
+- **Experiences**: By `startDate`
+- **Research**: By `period`
+- **Projects**: By `date`
+- **Publications**: By `year`
+- **Patents**: By `filingDate`
+- **Honors**: By `date`
+- **Service**: By `period`
+- **Affiliations**: By `period`
+- **Certifications**: By `date`
 
-```
-├── server.js              # Express server and API routes
-├── api-client.js          # Frontend API client
-├── admin.js               # Admin panel JavaScript
-├── data-loader.js         # Main site data loader
-├── index.html             # Main portfolio site
-├── admin.html             # Admin panel interface
-├── styles.css             # Main site styles
-├── admin.css              # Admin panel styles
-├── scripts/
-│   └── init-db.js         # Database initialization
-└── portfolio.db           # SQLite database (created on first run)
-```
+The sorting is done client-side to handle various date formats correctly.
 
-## Admin Panel Features
+## Troubleshooting
 
-### Sections with Drag & Drop Ordering:
-- **Experience** - Work history and positions
-- **Research** - Research projects and publications
-- **Projects** - Portfolio projects with custom links
-- **Publications** - Academic papers and articles
-- **Patents** - Patent applications and grants
-- **Honors** - Awards and recognitions
-- **Certifications** - Professional certifications
-- **Education** - Degrees and educational background
+### Strapi won't start
+- Check if port 1337 is available
+- Verify environment variables in `.env`
+- Check logs: `docker-compose logs strapi`
 
-### Content Management:
-- **Add/Edit/Delete** - Full CRUD operations
-- **Custom Link Text** - Specify button text for project links
-- **Rich Data Fields** - Period, institution, technologies, etc.
-- **Auto-save** - Changes persist immediately
+### Frontend can't connect to Strapi
+- Ensure Strapi container is healthy: `docker-compose ps`
+- Check network connectivity between containers
+- Verify CORS settings in Strapi
 
-## Security
+### Data not displaying
+- Check browser console for errors
+- Verify content is published in Strapi admin
+- Check API responses in Network tab
 
-- **Session-based authentication** using express-session
-- **Password hashing** with bcrypt
-- **Input validation** on all endpoints
-- **CORS protection** configured for security
+## Production Deployment
 
-### Change Default Password
+For production deployment:
 
-1. **Via Admin Panel:** Login and create a new user account
-2. **Via Database:** Use SQLite tools to update the users table
-3. **Via Code:** Modify the default user creation in `server.js`
+1. Use proper environment variables (not defaults)
+2. Set up reverse proxy (nginx/traefik) for SSL
+3. Use external database instead of SQLite for better performance
+4. Configure proper backup strategy
+5. Set up monitoring and logging
 
-## Deployment
-
-### Production Setup
-
-1. **Environment Variables:**
-   ```bash
-   export NODE_ENV=production
-   export PORT=3000
-   export SESSION_SECRET=your-secret-key
-   ```
-
-2. **SSL/HTTPS:** Configure reverse proxy (nginx) for HTTPS
-
-3. **Database Backup:** Regular backups of `portfolio.db`
-
-### Docker Deployment
-
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install --production
-COPY . .
-EXPOSE 3000
-CMD ["npm", "start"]
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+See `SOP_Single_Repo_CICD_to_Prod.md` for detailed deployment procedures.
 
 ## License
 
-MIT License - see LICENSE file for details
+Private - All Rights Reserved

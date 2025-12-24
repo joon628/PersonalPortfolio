@@ -56,3 +56,18 @@ build/
 
 CLAUDE.md
 .claude
+
+DEPLOYMENT_FIX_SUMMARY.md
+DOCKER_DEPLOYMENT.md
+DEPLOYMENT_STRATEGY.md
+
+# Strapi CMS
+strapi/.tmp/
+strapi/.cache/
+strapi/build/
+strapi/dist/
+strapi/public/uploads/
+strapi/exports/
+strapi/.strapi/
+strapi/package-lock.json
+

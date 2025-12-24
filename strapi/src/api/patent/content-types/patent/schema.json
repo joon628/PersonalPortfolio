@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "patents",
+  "info": {
+    "singularName": "patent",
+    "pluralName": "patents",
+    "displayName": "Patent"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "patentTitle": {
+      "type": "string",
+      "required": true
+    },
+    "patentNumber": {
+      "type": "string"
+    },
+    "patentStatus": {
+      "type": "enumeration",
+      "enum": [
+        "Pending",
+        "Granted",
+        "Published"
+      ]
+    },
+    "filingDate": {
+      "type": "string"
+    }
+  }
+}

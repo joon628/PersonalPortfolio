@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">Detail — Portfolio</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Detail page specific styles */
+    .detail-page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: var(--spacing-xl) var(--spacing-md);
+    }
+
+    .detail-header {
+      margin-bottom: var(--spacing-xl);
+      border-bottom: 2px solid var(--color-border);
+      padding-bottom: var(--spacing-lg);
+    }
+
+    .detail-back-link {
+      display: inline-block;
+      color: var(--color-primary);
+      text-decoration: none;
+      margin-bottom: var(--spacing-md);
+      font-size: 0.9rem;
+    }
+
+    .detail-back-link:hover {
+      text-decoration: underline;
+    }
+
+    .detail-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-sm);
+      color: var(--color-text);
+    }
+
+    .detail-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-md);
+      color: var(--color-text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .detail-meta-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    .detail-content {
+      line-height: 1.8;
+      font-size: 1.05rem;
+      color: var(--color-text);
+    }
+
+    .detail-content h2 {
+      margin-top: var(--spacing-xl);
+      margin-bottom: var(--spacing-md);
+      font-size: 1.75rem;
+      font-weight: 600;
+    }
+
+    .detail-content h3 {
+      margin-top: var(--spacing-lg);
+      margin-bottom: var(--spacing-sm);
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .detail-content p {
+      margin-bottom: var(--spacing-md);
+    }
+
+    .detail-content ul, .detail-content ol {
+      margin-bottom: var(--spacing-md);
+      padding-left: 2rem;
+      margin-left: 0;
+    }
+
+    .detail-content ul {
+      list-style-type: disc;
+    }
+
+    .detail-content ol {
+      list-style-type: decimal;
+    }
+
+    .detail-content li {
+      margin-bottom: var(--spacing-xs);
+      display: list-item;
+    }
+
+    .detail-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: var(--spacing-lg) 0;
+    }
+
+    .detail-content blockquote {
+      border-left: 4px solid var(--color-primary);
+      padding-left: var(--spacing-md);
+      margin: var(--spacing-lg) 0;
+      font-style: italic;
+      color: var(--color-text-secondary);
+    }
+
+    .detail-content code {
+      background: var(--color-bg-secondary);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+
+    .detail-content pre {
+      background: var(--color-bg-secondary);
+      padding: var(--spacing-md);
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: var(--spacing-lg) 0;
+    }
+
+    .detail-content pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .detail-links {
+      display: flex;
+      gap: var(--spacing-md);
+      flex-wrap: wrap;
+      margin-top: var(--spacing-xl);
+      padding-top: var(--spacing-lg);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .detail-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--color-primary);
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .detail-link-btn:hover {
+      background: var(--color-primary-dark);
+    }
+
+    .detail-link-btn.secondary {
+      background: var(--color-bg-secondary);
+      color: var(--color-text);
+    }
+
+    .detail-link-btn.secondary:hover {
+      background: var(--color-border);
+    }
+
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 400px;
+      font-size: 1.2rem;
+      color: var(--color-text-secondary);
+    }
+
+    .error-message {
+      text-align: center;
+      padding: var(--spacing-xl);
+      color: #e74c3c;
+    }
+
+    @media (max-width: 768px) {
+      .detail-title {
+        font-size: 1.8rem;
+      }
+
+      .detail-content {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="sr-only">Skip to main content</a>
+
+  <nav id="side-nav" role="navigation" aria-label="Main navigation">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/#about">About</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#research">Research</a></li>
+      <li><a href="/#skills">Skills</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main id="main-content" class="detail-page">
+    <div id="detail-loading" class="loading-spinner">
+      Loading...
+    </div>
+
+    <div id="detail-error" class="error-message" style="display: none;">
+      <h2>Content Not Found</h2>
+      <p>The requested content could not be found.</p>
+      <a href="/" class="detail-link-btn">← Back to Home</a>
+    </div>
+
+    <article id="detail-article" style="display: none;">
+      <div class="detail-header">
+        <a href="/" class="detail-back-link">← Back to Portfolio</a>
+        <h1 class="detail-title" id="detail-title"></h1>
+        <div class="detail-meta" id="detail-meta"></div>
+      </div>
+
+      <div class="detail-content" id="detail-content"></div>
+
+      <div class="detail-links" id="detail-links"></div>
+    </article>
+  </main>
+
+  <!-- Marked.js for markdown parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+  <script src="api-client-strapi.js"></script>
+  <script src="blocks-renderer.js"></script>
+  <script src="detail-page.js"></script>
+</body>
+</html>
