@@ -1,6 +1,28 @@
 // Vanilla JavaScript renderer for Strapi v5 Blocks format
 // Based on @strapi/blocks-react-renderer but for vanilla JS
 
+// Transform Strapi image URLs for the current environment
+function transformImageUrl(url) {
+    if (!url) return '';
+
+    const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (isDev) {
+        // In development, ensure URLs point to local Strapi
+        if (url.startsWith('/uploads/')) {
+            return `http://localhost:1337${url}`;
+        }
+        return url;
+    } else {
+        // In production, convert absolute localhost URLs to relative paths
+        // These will be proxied by nginx to the internal Strapi container
+        if (url.includes('localhost:1337')) {
+            return url.replace(/https?:\/\/localhost:1337/, '');
+        }
+        return url;
+    }
+}
+
 function renderBlocks(blocks) {
     if (!blocks || !Array.isArray(blocks)) return '';
 
@@ -34,7 +56,7 @@ function renderBlock(block) {
 
         case 'image':
             const alt = block.image?.alternativeText || '';
-            const src = block.image?.url || '';
+            const src = transformImageUrl(block.image?.url || '');
             return `<img src="${src}" alt="${escapeHtml(alt)}" />`;
 
         case 'link':
